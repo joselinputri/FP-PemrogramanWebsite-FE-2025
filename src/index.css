@@ -74,6 +74,37 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+
+  /* Game Custom Variables - Added to KCKS :root */
+  --sage-green: 140 29% 67%;
+  --pastel-blue: 212 52% 78%;
+  --soft-coral: 0 61% 83%;
+  --warm-cream: 38 100% 96%;
+  --soft-grass: 100 24% 53%;
+  --card-neutral: 220 22% 96%;
+  --sky-top: 200 100% 95%;
+  --sky-bottom: 210 40% 98%;
+  --cloud-white: 0 0% 99%;
+  --game-brown: 28 45% 30%;
+  --game-brown-light: 28 40% 50%;
+  --game-orange: 25 85% 55%;
+  --pastel-pink: 350 85% 88%;
+  --pastel-peach: 25 90% 88%;
+  --pastel-cream: 38 80% 94%;
+  --pastel-mint: 160 50% 82%;
+  --pastel-lavender: 270 60% 90%;
+  --pastel-yellow: 50 95% 85%;
+  --pastel-sage: 140 29% 75%;
+  --pastel-coral: 0 61% 87%;
+  --shadow-soft: 0 4px 24px -2px hsl(25 30% 20% / 0.08);
+  --shadow-medium: 0 8px 32px -4px hsl(25 30% 20% / 0.12);
+  --shadow-card: 0 12px 48px -8px hsl(25 30% 20% / 0.1);
+  --shadow-glow: 0 0 40px hsl(var(--primary) / 0.15);
+  --sidebar-background: 38 60% 95%;
+  --success: 140 50% 45%;
+  --success-foreground: 0 0% 100%;
+  --warning: 42 95% 55%;
+  --warning-foreground: 25 30% 15%;
 }
 
 .dark {
@@ -115,7 +146,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Poppins', 'Nunito', sans-serif;
   }
 }
 
@@ -143,134 +175,9 @@
   animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-/* Watch and Memorize Game Styles */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  :root {
-    /* Soft Pastel Palette - per design brief */
-    --sage-green: 140 29% 67%;
-    --pastel-blue: 212 52% 78%;
-    --soft-coral: 0 61% 83%;
-    --warm-cream: 38 100% 96%;
-    --soft-grass: 100 24% 53%;
-    --card-neutral: 220 22% 96%;
-    
-    /* Sky gradient colors */
-    --sky-top: 200 100% 95%;
-    --sky-bottom: 210 40% 98%;
-    
-    /* Cloud */
-    --cloud-white: 0 0% 99%;
-    
-    /* UI Colors - Soft & warm */
-    --background: 38 100% 96%;
-    --foreground: 25 30% 20%;
-    
-    --card: 0 0% 100%;
-    --card-foreground: 25 30% 20%;
-    
-    --popover: 0 0% 100%;
-    --popover-foreground: 25 30% 20%;
-    
-    --primary: 350 65% 62%;
-    --primary-foreground: 0 0% 100%;
-    
-    --secondary: 140 35% 58%;
-    --secondary-foreground: 140 40% 15%;
-    
-    --accent: 270 45% 72%;
-    --accent-foreground: 270 40% 20%;
-    
-    --muted: 38 20% 92%;
-    --muted-foreground: 25 15% 50%;
-    
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 0 0% 100%;
-    
-    --success: 140 50% 45%;
-    --success-foreground: 0 0% 100%;
-    
-    --warning: 42 95% 55%;
-    --warning-foreground: 25 30% 15%;
-    
-    --border: 25 25% 88%;
-    --input: 25 25% 90%;
-    --ring: 350 65% 62%;
-    
-    --radius: 1rem;
-    
-    /* Game specific - warmer browns */
-    --game-brown: 28 45% 30%;
-    --game-brown-light: 28 40% 50%;
-    --game-orange: 25 85% 55%;
-    
-    /* Pastel accents */
-    --pastel-pink: 350 85% 88%;
-    --pastel-peach: 25 90% 88%;
-    --pastel-cream: 38 80% 94%;
-    --pastel-mint: 160 50% 82%;
-    --pastel-lavender: 270 60% 90%;
-    --pastel-yellow: 50 95% 85%;
-    --pastel-sage: 140 29% 75%;
-    --pastel-coral: 0 61% 87%;
-    
-    /* Shadows - softer with pastel tints */
-    --shadow-soft: 0 4px 24px -2px hsl(25 30% 20% / 0.08);
-    --shadow-medium: 0 8px 32px -4px hsl(25 30% 20% / 0.12);
-    --shadow-card: 0 12px 48px -8px hsl(25 30% 20% / 0.1);
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.15);
-    
-    /* Sidebar (keeping for compatibility) */
-    --sidebar-background: 38 60% 95%;
-    --sidebar-foreground: 25 30% 25%;
-    --sidebar-primary: 350 65% 62%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 140 35% 85%;
-    --sidebar-accent-foreground: 140 40% 20%;
-    --sidebar-border: 25 25% 88%;
-    --sidebar-ring: 350 65% 62%;
-  }
-
-  .dark {
-    --background: 25 20% 10%;
-    --foreground: 38 60% 92%;
-    
-    --card: 25 20% 14%;
-    --card-foreground: 38 60% 92%;
-    
-    --popover: 25 20% 12%;
-    --popover-foreground: 38 60% 92%;
-    
-    --primary: 350 60% 58%;
-    --primary-foreground: 0 0% 100%;
-    
-    --secondary: 140 35% 35%;
-    --secondary-foreground: 140 30% 92%;
-    
-    --accent: 270 40% 45%;
-    --accent-foreground: 270 30% 92%;
-    
-    --muted: 25 15% 20%;
-    --muted-foreground: 25 15% 65%;
-    
-    --border: 25 15% 22%;
-    --input: 25 15% 20%;
-    --ring: 350 60% 58%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground antialiased;
-  }
-}
+/* ========================================
+   GAME CUSTOM STYLES - Added Below KCKS
+   ======================================== */
 
 @layer utilities {
   /* Typography utilities */
@@ -279,7 +186,16 @@
     letter-spacing: 0.02em;
   }
   
-  /* Gradient backgrounds - Updated palette */
+  .font-body {
+    font-family: 'Poppins', 'Nunito', sans-serif;
+  }
+  
+  .font-display {
+    font-family: 'Quicksand', 'Poppins', sans-serif;
+    font-weight: 600;
+  }
+  
+  /* Gradient backgrounds */
   .bg-sky-gradient {
     background: linear-gradient(180deg, 
       hsl(200 100% 95%) 0%, 
@@ -304,10 +220,12 @@
   }
   
   .bg-glass {
-    @apply bg-card/90 backdrop-blur-md;
+    background-color: hsl(var(--card) / 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
   
-  /* Noise texture overlay (subtle grain) */
+  /* Noise texture overlay */
   .noise-texture::before {
     content: '';
     position: absolute;
@@ -317,44 +235,109 @@
     z-index: 1;
   }
   
-  /* Card styles - enhanced */
+  /* Card styles */
   .card-cute {
-    @apply rounded-2xl bg-card border-2 border-border p-4 shadow-card;
+    @apply rounded-2xl border-2 shadow-lg p-4;
+    background-color: hsl(var(--card));
+    border-color: hsl(var(--border));
     box-shadow: var(--shadow-card);
   }
   
   .card-game {
-    @apply rounded-2xl bg-card-cream border-3 border-game-brown/30 shadow-lg;
+    @apply rounded-2xl border-[3px] shadow-lg;
+    background-image: linear-gradient(135deg, hsl(38 80% 97%) 0%, hsl(0 0% 100%) 100%);
+    border-color: hsl(var(--game-brown) / 0.3);
+    border-style: solid;
     box-shadow: 
       var(--shadow-medium),
       inset 0 1px 0 hsl(0 0% 100% / 0.8);
   }
   
   .card-glass {
-    @apply rounded-2xl bg-card/85 backdrop-blur-md border border-border/50 shadow-lg;
+    @apply rounded-2xl border shadow-lg;
+    background-color: hsl(var(--card) / 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-color: hsl(var(--border) / 0.5);
   }
   
-  /* Button styles - cute 3D press effect */
+  /* Button base styles */
   .btn-cute {
-    @apply px-6 py-3 rounded-full font-pixel text-[10px]
-    shadow-[0_4px_0_0] active:shadow-[0_2px_0_0] active:translate-y-[2px]
-    transition-all duration-100 ease-out
-    hover:shadow-[0_6px_0_0] hover:-translate-y-[1px];
+    @apply px-6 py-3 rounded-full transition-all duration-100 ease-out;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 0 0 currentColor;
+  }
+  
+  .btn-cute:active {
+    box-shadow: 0 2px 0 0 currentColor;
+    transform: translateY(2px);
+  }
+  
+  .btn-cute:hover {
+    box-shadow: 0 6px 0 0 currentColor;
+    transform: translateY(-1px);
   }
   
   .btn-primary-cute {
-    @apply btn-cute bg-primary text-primary-foreground
-    shadow-[0_4px_0_0_hsl(350_60%_50%)];
+    @apply px-6 py-3 rounded-full transition-all duration-100 ease-out;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 4px 0 0 hsl(350 60% 50%);
+  }
+  
+  .btn-primary-cute:active {
+    box-shadow: 0 2px 0 0 hsl(350 60% 50%);
+    transform: translateY(2px);
+  }
+  
+  .btn-primary-cute:hover {
+    box-shadow: 0 6px 0 0 hsl(350 60% 50%);
+    transform: translateY(-1px);
   }
   
   .btn-secondary-cute {
-    @apply btn-cute bg-secondary text-secondary-foreground
-    shadow-[0_4px_0_0_hsl(140_35%_45%)];
+    @apply px-6 py-3 rounded-full transition-all duration-100 ease-out;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    box-shadow: 0 4px 0 0 hsl(140 35% 45%);
+  }
+  
+  .btn-secondary-cute:active {
+    box-shadow: 0 2px 0 0 hsl(140 35% 45%);
+    transform: translateY(2px);
+  }
+  
+  .btn-secondary-cute:hover {
+    box-shadow: 0 6px 0 0 hsl(140 35% 45%);
+    transform: translateY(-1px);
   }
   
   .btn-accent-cute {
-    @apply btn-cute bg-accent text-accent-foreground
-    shadow-[0_4px_0_0_hsl(270_45%_58%)];
+    @apply px-6 py-3 rounded-full transition-all duration-100 ease-out;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    box-shadow: 0 4px 0 0 hsl(270 45% 58%);
+  }
+  
+  .btn-accent-cute:active {
+    box-shadow: 0 2px 0 0 hsl(270 45% 58%);
+    transform: translateY(2px);
+  }
+  
+  .btn-accent-cute:hover {
+    box-shadow: 0 6px 0 0 hsl(270 45% 58%);
+    transform: translateY(-1px);
   }
   
   /* Animation utilities */
@@ -368,10 +351,6 @@
   
   .animate-wiggle {
     animation: wiggle 0.5s ease-in-out;
-  }
-  
-  .animate-shake {
-    animation: shake 0.45s ease-in-out;
   }
   
   .animate-pop {
@@ -428,7 +407,7 @@
   }
 }
 
-/* Keyframes */
+/* Game Keyframes */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-12px); }
@@ -443,14 +422,6 @@
   0%, 100% { transform: rotate(0deg); }
   25% { transform: rotate(-5deg); }
   75% { transform: rotate(5deg); }
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-10px); }
-  40% { transform: translateX(10px); }
-  60% { transform: translateX(-8px); }
-  80% { transform: translateX(8px); }
 }
 
 @keyframes pop {
@@ -561,15 +532,4 @@
 ::selection {
   background: hsl(var(--primary) / 0.2);
   color: hsl(var(--foreground));
-}
-
-@layer utilities {
-  .font-body {
-    font-family: 'Poppins', 'Nunito', sans-serif;
-  }
-  
-  .font-display {
-    font-family: 'Quicksand', 'Poppins', sans-serif;
-    font-weight: 600;
-  }
 }
