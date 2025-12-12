@@ -6,12 +6,25 @@ import { CuteButton } from "../ui/CuteButton";
 import { Shop } from "./Shop";
 import { GamePlay } from "./GamePlay";
 import { Scoreboard } from "./Scoreboard";
-import { Pendant, PendantType } from "./Pendant";
-import { DifficultySelect, Difficulty } from "./DifficultySelect";
+import { Pendant } from "./Pendant";
+import type { PendantType } from "./Pendant";
+import { DifficultySelect } from "./DifficultySelect";
+import type { Difficulty } from "./DifficultySelect";
 import { MusicControls } from "./MusicControls";
 import { useSoundEffects } from "../../hooks/useSoundEffects";
 import { useBackgroundMusic } from "../../hooks/useBackgroundMusic";
-import { Play, ShoppingBag, Trophy, HelpCircle, Sparkles, Crown, Medal, Clock, LogOut, RotateCcw } from "lucide-react";
+import {
+  Play,
+  ShoppingBag,
+  Trophy,
+  HelpCircle,
+  Sparkles,
+  Crown,
+  Medal,
+  Clock,
+  LogOut,
+  RotateCcw,
+} from "lucide-react";
 import { ANIMALS } from "../animals/AnimalCollection";
 
 type View = "dashboard" | "playing" | "scoreboard" | "intro" | "leaderboard";
@@ -52,21 +65,64 @@ const INITIAL_LEADERBOARD: LeaderboardEntry[] = [];
 // Cute custom icons
 const CoinIcon = () => (
   <svg width="20" height="20" viewBox="0 0 20 20">
-    <circle cx="10" cy="10" r="9" fill="#FFD700" stroke="#E5A800" strokeWidth="1.5" />
+    <circle
+      cx="10"
+      cy="10"
+      r="9"
+      fill="#FFD700"
+      stroke="#E5A800"
+      strokeWidth="1.5"
+    />
     <circle cx="10" cy="10" r="6" fill="#FFEC8B" />
-    <text x="10" y="14" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#B8860B">$</text>
+    <text
+      x="10"
+      y="14"
+      textAnchor="middle"
+      fontSize="10"
+      fontWeight="bold"
+      fill="#B8860B"
+    >
+      $
+    </text>
   </svg>
 );
 
 const TrophyIcon = ({ size = 32 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 32 32">
-    <path d="M16 24 L16 28" stroke="#B8860B" strokeWidth="3" strokeLinecap="round" />
+    <path
+      d="M16 24 L16 28"
+      stroke="#B8860B"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
     <rect x="10" y="27" width="12" height="3" rx="1.5" fill="#B8860B" />
-    <path d="M8 4 L24 4 L22 16 Q16 22 10 16 L8 4 Z" fill="#FFD700" stroke="#E5A800" strokeWidth="1.5" />
+    <path
+      d="M8 4 L24 4 L22 16 Q16 22 10 16 L8 4 Z"
+      fill="#FFD700"
+      stroke="#E5A800"
+      strokeWidth="1.5"
+    />
     <path d="M10 6 L22 6 L20.5 14 Q16 18 11.5 14 L10 6 Z" fill="#FFEC8B" />
-    <path d="M8 4 Q2 6 4 12 Q6 16 10 14" fill="#FFD700" stroke="#E5A800" strokeWidth="1" />
-    <path d="M24 4 Q30 6 28 12 Q26 16 22 14" fill="#FFD700" stroke="#E5A800" strokeWidth="1" />
-    <circle cx="16" cy="10" r="3" fill="#FF6B6B" stroke="#E55555" strokeWidth="1" />
+    <path
+      d="M8 4 Q2 6 4 12 Q6 16 10 14"
+      fill="#FFD700"
+      stroke="#E5A800"
+      strokeWidth="1"
+    />
+    <path
+      d="M24 4 Q30 6 28 12 Q26 16 22 14"
+      fill="#FFD700"
+      stroke="#E5A800"
+      strokeWidth="1"
+    />
+    <circle
+      cx="16"
+      cy="10"
+      r="3"
+      fill="#FF6B6B"
+      stroke="#E55555"
+      strokeWidth="1"
+    />
   </svg>
 );
 
@@ -74,14 +130,17 @@ export const Dashboard = () => {
   const [view, setView] = useState<View>("dashboard");
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem("watchAndMemorize_gameState");
-    return saved ? { ...initialGameState, ...JSON.parse(saved) } : initialGameState;
+    return saved
+      ? { ...initialGameState, ...JSON.parse(saved) }
+      : initialGameState;
   });
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [showPlayPopup, setShowPlayPopup] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showNameInput, setShowNameInput] = useState(false);
   const [tempName, setTempName] = useState("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("normal");
+  const [selectedDifficulty, setSelectedDifficulty] =
+    useState<Difficulty>("normal");
   const [countdown, setCountdown] = useState(3);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(() => {
     const saved = localStorage.getItem("watchAndMemorize_leaderboard");
@@ -96,17 +155,32 @@ export const Dashboard = () => {
 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { playSound } = useSoundEffects(true);
-  const { isPlaying: isMusicPlaying, toggleMusic, volume, setVolume, isMuted, toggleMute } = useBackgroundMusic();
+  const {
+    isPlaying: isMusicPlaying,
+    toggleMusic,
+    volume,
+    setVolume,
+    isMuted,
+    toggleMute,
+  } = useBackgroundMusic();
 
   // Save game state
   useEffect(() => {
-    localStorage.setItem("watchAndMemorize_gameState", JSON.stringify(gameState));
+    localStorage.setItem(
+      "watchAndMemorize_gameState",
+      JSON.stringify(gameState),
+    );
   }, [gameState]);
 
   // Save leaderboard - filter out any entries without actual player names
   useEffect(() => {
-    const validLeaderboard = leaderboard.filter(entry => entry.name && entry.name.trim() !== "");
-    localStorage.setItem("watchAndMemorize_leaderboard", JSON.stringify(validLeaderboard));
+    const validLeaderboard = leaderboard.filter(
+      (entry) => entry.name && entry.name.trim() !== "",
+    );
+    localStorage.setItem(
+      "watchAndMemorize_leaderboard",
+      JSON.stringify(validLeaderboard),
+    );
   }, [leaderboard]);
 
   // Handle logout - reset all progress and show name input
@@ -147,9 +221,14 @@ export const Dashboard = () => {
     }));
   };
 
-  const handleGameComplete = (score: number, correct: number, total: number, timeSpent: number) => {
-    const coinsEarned = Math.floor(score / 10) + (correct * 10);
-    
+  const handleGameComplete = (
+    score: number,
+    correct: number,
+    total: number,
+    timeSpent: number,
+  ) => {
+    const coinsEarned = Math.floor(score / 10) + correct * 10;
+
     setLastGameResult({ score, correct, total, timeSpent });
     setGameState((prev) => ({
       ...prev,
@@ -168,7 +247,9 @@ export const Dashboard = () => {
         time: timeSpent,
       };
       setLeaderboard((prev) => {
-        const updated = [...prev, newEntry].sort((a, b) => b.score - a.score).slice(0, 10);
+        const updated = [...prev, newEntry]
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 10);
         return updated;
       });
     }
@@ -230,7 +311,7 @@ export const Dashboard = () => {
     return (
       <div className="fixed inset-0 overflow-hidden">
         <GameBackground />
-        <motion.div 
+        <motion.div
           className="absolute inset-0 flex items-center justify-center z-20"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -240,19 +321,23 @@ export const Dashboard = () => {
             className="flex flex-col items-center justify-center text-center"
             initial={{ scale: 0.6, y: 40 }}
             animate={{ scale: 1, y: 0 }}
-            transition={{ duration: 0.5, type: "spring", stiffness: 200, damping: 18 }}
+            transition={{
+              duration: 0.5,
+              type: "spring",
+              stiffness: 200,
+              damping: 18,
+            }}
           >
-
             {/* Centered flying penguin - smooth professional animation */}
             <motion.div
               className="relative flex items-center justify-center"
               initial={{ y: 40, scale: 0.6, opacity: 0 }}
               animate={{ y: 0, scale: 1, opacity: 1 }}
-              transition={{ 
-                duration: 0.6, 
-                type: "spring", 
-                stiffness: 180, 
-                damping: 15 
+              transition={{
+                duration: 0.6,
+                type: "spring",
+                stiffness: 180,
+                damping: 15,
               }}
             >
               {/* Soft glow behind penguin */}
@@ -260,18 +345,22 @@ export const Dashboard = () => {
                 className="absolute inset-0 bg-gradient-radial from-pastel-blue/40 via-pastel-mint/20 to-transparent rounded-full blur-2xl"
                 style={{ width: 200, height: 200, left: -20, top: -20 }}
                 animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               />
-              
+
               <motion.div
-                animate={{ 
+                animate={{
                   y: [-8, 4, -8],
                   rotate: [-2, 2, -2],
                 }}
-                transition={{ 
-                  duration: 2, 
-                  repeat: Infinity, 
-                  ease: "easeInOut" 
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
                 }}
               >
                 <Penguin size={180} isFlying isHappy />
@@ -284,12 +373,16 @@ export const Dashboard = () => {
                 key={i}
                 className="absolute pointer-events-none"
                 style={{
-                  left: `calc(50% + ${Math.cos(i * Math.PI / 4) * 110}px)`,
-                  top: `calc(45% + ${Math.sin(i * Math.PI / 4) * 90}px)`,
+                  left: `calc(50% + ${Math.cos((i * Math.PI) / 4) * 110}px)`,
+                  top: `calc(45% + ${Math.sin((i * Math.PI) / 4) * 90}px)`,
                 }}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: [0, 1, 0], scale: [0.4, 1.1, 0.4] }}
-                transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.12 }}
+                transition={{
+                  duration: 1.8,
+                  repeat: Infinity,
+                  delay: i * 0.12,
+                }}
               >
                 <Sparkles size={16} className="text-warning drop-shadow-sm" />
               </motion.div>
@@ -320,11 +413,11 @@ export const Dashboard = () => {
               initial={{ scale: 1.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ 
-                duration: 0.35, 
-                type: "spring", 
-                stiffness: 280, 
-                damping: 20 
+              transition={{
+                duration: 0.35,
+                type: "spring",
+                stiffness: 280,
+                damping: 20,
               }}
             >
               <span className="font-pixel text-6xl text-primary drop-shadow-lg">
@@ -390,7 +483,9 @@ export const Dashboard = () => {
                 >
                   <TrophyIcon size={36} />
                 </motion.div>
-                <h2 className="font-pixel text-lg text-foreground">LEADERBOARD</h2>
+                <h2 className="font-pixel text-lg text-foreground">
+                  LEADERBOARD
+                </h2>
               </div>
               <CuteButton
                 variant="ghost"
@@ -400,19 +495,19 @@ export const Dashboard = () => {
                 BACK
               </CuteButton>
             </div>
-            
+
             <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
               {leaderboard.map((entry, index) => (
                 <motion.div
                   key={`${entry.name}-${index}`}
                   className={`flex items-center gap-3 p-3 rounded-2xl border-2 transition-all ${
-                    index === 0 
-                      ? "bg-gradient-to-r from-amber-100 to-yellow-50 border-warning/50" 
-                      : index === 1 
-                      ? "bg-gradient-to-r from-gray-100 to-slate-50 border-gray-300" 
-                      : index === 2 
-                      ? "bg-gradient-to-r from-orange-100 to-amber-50 border-amber-400/50"
-                      : "bg-muted/30 border-border/50 hover:bg-muted/50"
+                    index === 0
+                      ? "bg-gradient-to-r from-amber-100 to-yellow-50 border-warning/50"
+                      : index === 1
+                        ? "bg-gradient-to-r from-gray-100 to-slate-50 border-gray-300"
+                        : index === 2
+                          ? "bg-gradient-to-r from-orange-100 to-amber-50 border-amber-400/50"
+                          : "bg-muted/30 border-border/50 hover:bg-muted/50"
                   }`}
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
@@ -421,7 +516,10 @@ export const Dashboard = () => {
                 >
                   <div className="w-8 h-8 flex items-center justify-center">
                     {index === 0 ? (
-                      <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                      <motion.div
+                        animate={{ rotate: [0, 5, -5, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
                         <Crown size={24} className="text-warning" />
                       </motion.div>
                     ) : index === 1 ? (
@@ -429,33 +527,47 @@ export const Dashboard = () => {
                     ) : index === 2 ? (
                       <Medal size={22} className="text-amber-600" />
                     ) : (
-                      <span className="font-pixel text-sm text-muted-foreground">{index + 1}</span>
+                      <span className="font-pixel text-sm text-muted-foreground">
+                        {index + 1}
+                      </span>
                     )}
                   </div>
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-pastel-mint border-2 border-primary/30 flex items-center justify-center">
-                    {ANIMALS[entry.avatar % ANIMALS.length].component({ size: 32 })}
+                    {(() => {
+                      const AnimalComponent =
+                        ANIMALS[entry.avatar % ANIMALS.length].component;
+                      return <AnimalComponent size={32} />;
+                    })()}{" "}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-body text-sm text-foreground font-medium truncate">{entry.name}</p>
+                    <p className="font-body text-sm text-foreground font-medium truncate">
+                      {entry.name}
+                    </p>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">{entry.date}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {entry.date}
+                      </span>
                       {entry.time && (
                         <>
                           <Clock size={10} className="text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">{formatTime(entry.time)}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {formatTime(entry.time)}
+                          </span>
                         </>
                       )}
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="font-pixel text-lg text-warning">{entry.score}</span>
+                    <span className="font-pixel text-lg text-warning">
+                      {entry.score}
+                    </span>
                     <p className="text-xs text-muted-foreground">pts</p>
                   </div>
                 </motion.div>
               ))}
             </div>
-            
-            <motion.div 
+
+            <motion.div
               className="mt-4 pt-4 border-t border-border/50"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -474,7 +586,7 @@ export const Dashboard = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <GameBackground />
-      
+
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-4">
         {/* Header */}
@@ -484,13 +596,17 @@ export const Dashboard = () => {
           animate={{ y: 0, opacity: 1 }}
         >
           {/* Player info */}
-          <motion.div 
+          <motion.div
             className="bg-card/95 backdrop-blur-sm rounded-2xl p-3 border-2 border-primary/30 shadow-cute flex items-center gap-3 cursor-pointer group"
             onClick={() => setShowNameInput(true)}
-            whileHover={{ y: -3, scale: 1.02, boxShadow: "0 8px 25px -5px rgba(0,0,0,0.15)" }}
+            whileHover={{
+              y: -3,
+              scale: 1.02,
+              boxShadow: "0 8px 25px -5px rgba(0,0,0,0.15)",
+            }}
             whileTap={{ scale: 0.98 }}
           >
-            <motion.div 
+            <motion.div
               className="w-10 h-10 rounded-full bg-gradient-to-br from-pastel-pink to-pastel-lavender flex items-center justify-center border-2 border-primary/50 overflow-hidden"
               whileHover={{ rotate: [0, -5, 5, 0] }}
               transition={{ duration: 0.4 }}
@@ -503,10 +619,15 @@ export const Dashboard = () => {
                 {gameState.playerName || "Enter name..."}
               </p>
               <div className="flex items-center gap-1">
-                <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 2, repeat: Infinity }}>
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
                   <Trophy size={10} className="text-warning" />
                 </motion.div>
-                <p className="text-[10px] text-muted-foreground">{gameState.gamesPlayed} games</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {gameState.gamesPlayed} games
+                </p>
               </div>
             </div>
             {gameState.playerName && (
@@ -523,7 +644,7 @@ export const Dashboard = () => {
               </motion.button>
             )}
           </motion.div>
-          
+
           {/* Music Controls & Coins */}
           <div className="flex items-center gap-2">
             <MusicControls
@@ -536,7 +657,11 @@ export const Dashboard = () => {
             />
             <motion.div
               className="bg-card/95 backdrop-blur-sm rounded-full px-4 py-2 border-2 border-warning/50 shadow-cute flex items-center gap-2 cursor-pointer group"
-              whileHover={{ scale: 1.08, y: -3, boxShadow: "0 6px 20px -3px rgba(255,215,0,0.3)" }}
+              whileHover={{
+                scale: 1.08,
+                y: -3,
+                boxShadow: "0 6px 20px -3px rgba(255,215,0,0.3)",
+              }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 playSound("coin");
@@ -549,11 +674,13 @@ export const Dashboard = () => {
               >
                 <CoinIcon />
               </motion.div>
-              <span className="font-pixel text-sm text-warning group-hover:text-amber-400 transition-colors">{gameState.coins}</span>
+              <span className="font-pixel text-sm text-warning group-hover:text-amber-400 transition-colors">
+                {gameState.coins}
+              </span>
             </motion.div>
           </div>
         </motion.div>
-        
+
         {/* Title with decorations - gentle sparkles not stars */}
         <motion.div
           className="text-center mb-6"
@@ -582,7 +709,7 @@ export const Dashboard = () => {
             Can you remember the cute animals?
           </p>
         </motion.div>
-        
+
         {/* Mascot penguin - centered and larger */}
         <motion.div
           className="relative mb-6"
@@ -603,7 +730,7 @@ export const Dashboard = () => {
           >
             <Penguin size={160} isFlying />
           </motion.div>
-          
+
           {/* Speech bubble */}
           <motion.div
             className="absolute -top-2 -right-4 bg-cloud rounded-2xl px-4 py-2 border-2 border-border/50 shadow-md"
@@ -615,7 +742,7 @@ export const Dashboard = () => {
             <div className="absolute -bottom-2 right-6 w-4 h-4 bg-cloud border-r-2 border-b-2 border-border/50 transform rotate-45" />
           </motion.div>
         </motion.div>
-        
+
         {/* High score display - COMPACT & ELEGANT */}
         <motion.div
           className="relative bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 backdrop-blur-sm rounded-2xl px-6 py-4 border-3 border-warning/30 shadow-lg mb-5 overflow-hidden"
@@ -632,8 +759,10 @@ export const Dashboard = () => {
               <TrophyIcon size={32} />
             </motion.div>
             <div className="text-center">
-              <p className="font-pixel text-[10px] text-amber-600 mb-1 tracking-wider">BEST SCORE</p>
-              <motion.span 
+              <p className="font-pixel text-[10px] text-amber-600 mb-1 tracking-wider">
+                BEST SCORE
+              </p>
+              <motion.span
                 className="font-pixel text-2xl text-amber-500 drop-shadow block"
                 animate={{ scale: [1, 1.02, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -649,7 +778,7 @@ export const Dashboard = () => {
             </motion.div>
           </div>
         </motion.div>
-        
+
         {/* Main buttons */}
         <motion.div
           className="flex flex-col gap-3 items-center"
@@ -668,7 +797,7 @@ export const Dashboard = () => {
           >
             PLAY NOW
           </CuteButton>
-          
+
           <div className="flex gap-3 flex-wrap justify-center">
             <CuteButton
               variant="secondary"
@@ -681,7 +810,7 @@ export const Dashboard = () => {
             >
               SHOP
             </CuteButton>
-            
+
             <CuteButton
               variant="accent"
               size="md"
@@ -693,7 +822,7 @@ export const Dashboard = () => {
             >
               HOW TO
             </CuteButton>
-            
+
             {/* Scoreboard button - opens full leaderboard modal */}
             <CuteButton
               variant="accent"
@@ -744,32 +873,47 @@ export const Dashboard = () => {
                     ) : index === 2 ? (
                       <Medal size={16} className="text-amber-600" />
                     ) : (
-                      <span className="font-pixel text-[10px] text-muted-foreground">{index + 1}</span>
+                      <span className="font-pixel text-[10px] text-muted-foreground">
+                        {index + 1}
+                      </span>
                     )}
                   </div>
                   <div className="w-7 h-7 rounded-full overflow-hidden bg-pastel-mint flex items-center justify-center">
-                    {ANIMALS[entry.avatar % ANIMALS.length].component({ size: 24 })}
+                    {(() => {
+                      const AnimalComponent = ANIMALS[0].component;
+                      return <AnimalComponent size={45} isHappy={true} />;
+                    })()}{" "}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-body text-xs text-foreground truncate">{entry.name}</p>
+                    <p className="font-body text-xs text-foreground truncate">
+                      {entry.name}
+                    </p>
                     <div className="flex items-center gap-1">
-                      <p className="text-[10px] text-muted-foreground">{entry.date}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {entry.date}
+                      </p>
                       {entry.time && (
                         <>
-                          <span className="text-[8px] text-muted-foreground">·</span>
+                          <span className="text-[8px] text-muted-foreground">
+                            ·
+                          </span>
                           <Clock size={8} className="text-muted-foreground" />
-                          <span className="text-[8px] text-muted-foreground">{formatTime(entry.time)}</span>
+                          <span className="text-[8px] text-muted-foreground">
+                            {formatTime(entry.time)}
+                          </span>
                         </>
                       )}
                     </div>
                   </div>
-                  <span className="font-pixel text-[10px] text-warning">{entry.score}</span>
+                  <span className="font-pixel text-[10px] text-warning">
+                    {entry.score}
+                  </span>
                 </motion.div>
               ))}
             </div>
           </div>
         </motion.div>
-        
+
         {/* Owned pendants display - smaller */}
         <motion.div
           className="absolute bottom-4 left-4 right-4"
@@ -778,37 +922,47 @@ export const Dashboard = () => {
           transition={{ delay: 0.8 }}
         >
           <div className="bg-card/95 backdrop-blur-sm rounded-2xl p-3 border-2 border-border shadow-cute max-w-md mx-auto">
-            <p className="font-pixel text-[8px] text-muted-foreground mb-2 text-center">MY PENDANTS</p>
+            <p className="font-pixel text-[8px] text-muted-foreground mb-2 text-center">
+              MY PENDANTS
+            </p>
             <div className="flex justify-center gap-3">
-              {(Object.keys(gameState.pendants) as PendantType[]).map((type) => (
-                <Pendant
-                  key={type}
-                  type={type}
-                  size={32}
-                  owned={gameState.pendants[type]}
-                />
-              ))}
+              {(Object.keys(gameState.pendants) as PendantType[]).map(
+                (type) => (
+                  <Pendant
+                    key={type}
+                    type={type}
+                    size={32}
+                    owned={gameState.pendants[type]}
+                  />
+                ),
+              )}
             </div>
           </div>
         </motion.div>
-        
+
         {/* Decorative animals - animated */}
-        <motion.div 
+        <motion.div
           className="absolute bottom-28 left-8"
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 2.5, repeat: Infinity }}
         >
-          {ANIMALS[0].component({ size: 45, isHappy: true })}
+          {(() => {
+            const Animal = ANIMALS[0].component;
+            return <Animal size={45} isHappy={true} />;
+          })()}
         </motion.div>
-        <motion.div 
+        <motion.div
           className="absolute bottom-32 right-8"
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
         >
-          {ANIMALS[2].component({ size: 45, isHappy: true })}
+          {(() => {
+            const AnimalComponent = ANIMALS[2].component;
+            return <AnimalComponent size={45} isHappy={true} />;
+          })()}{" "}
         </motion.div>
       </div>
-      
+
       {/* Shop modal */}
       <AnimatePresence>
         {isShopOpen && (
@@ -821,9 +975,9 @@ export const Dashboard = () => {
           />
         )}
       </AnimatePresence>
-      
-{/* Name input modal */}
-<AnimatePresence>
+
+      {/* Name input modal */}
+      <AnimatePresence>
         {showNameInput && (
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 backdrop-blur-sm"
@@ -846,12 +1000,14 @@ export const Dashboard = () => {
               >
                 <Penguin size={80} isHappy />
               </motion.div>
-              
-              <h2 className="font-pixel text-lg text-foreground mt-4 mb-2">WHAT'S YOUR NAME?</h2>
+
+              <h2 className="font-pixel text-lg text-foreground mt-4 mb-2">
+                WHAT'S YOUR NAME?
+              </h2>
               <p className="text-muted-foreground text-sm mb-4 font-body">
                 So we can remember your amazing scores!
               </p>
-              
+
               <input
                 type="text"
                 value={tempName}
@@ -862,7 +1018,7 @@ export const Dashboard = () => {
                 maxLength={15}
                 autoFocus
               />
-              
+
               <div className="flex gap-3">
                 <CuteButton
                   variant="ghost"
@@ -886,7 +1042,7 @@ export const Dashboard = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {/* Play popup with difficulty */}
       <AnimatePresence>
         {showPlayPopup && (
@@ -912,24 +1068,29 @@ export const Dashboard = () => {
               >
                 <Penguin size={120} isHappy />
               </motion.div>
-              
-              <h2 className="font-pixel text-lg text-foreground mt-4 mb-2">READY TO PLAY?</h2>
+
+              <h2 className="font-pixel text-lg text-foreground mt-4 mb-2">
+                READY TO PLAY?
+              </h2>
               <p className="text-muted-foreground text-sm mb-4 font-body">
-                Watch the adorable animals walk by, then pick them in the correct order!
+                Watch the adorable animals walk by, then pick them in the
+                correct order!
               </p>
-              
+
               {/* Difficulty selector */}
               <div className="mb-6">
-                <p className="font-pixel text-[10px] text-muted-foreground mb-2">SELECT DIFFICULTY</p>
-                <DifficultySelect 
-                  selected={selectedDifficulty} 
+                <p className="font-pixel text-[10px] text-muted-foreground mb-2">
+                  SELECT DIFFICULTY
+                </p>
+                <DifficultySelect
+                  selected={selectedDifficulty}
                   onSelect={(d) => {
                     playSound("click");
                     setSelectedDifficulty(d);
-                  }} 
+                  }}
                 />
               </div>
-              
+
               <div className="flex flex-col gap-3">
                 <CuteButton
                   variant="primary"
@@ -940,7 +1101,7 @@ export const Dashboard = () => {
                 >
                   START GAME
                 </CuteButton>
-                
+
                 <CuteButton
                   variant="ghost"
                   size="md"
@@ -953,7 +1114,7 @@ export const Dashboard = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {/* How to play modal */}
       <AnimatePresence>
         {showHowToPlay && (
@@ -971,52 +1132,71 @@ export const Dashboard = () => {
               exit={{ scale: 0.8, y: 30 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="font-pixel text-lg text-foreground text-center mb-6">HOW TO PLAY</h2>
-              
+              <h2 className="font-pixel text-lg text-foreground text-center mb-6">
+                HOW TO PLAY
+              </h2>
+
               <div className="space-y-4">
                 <div className="flex items-start gap-4 p-4 bg-pastel-cream/50 rounded-xl border border-primary/20">
-                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-pixel shrink-0">1</div>
+                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-pixel shrink-0">
+                    1
+                  </div>
                   <div>
-                    <h3 className="font-pixel text-xs text-foreground mb-1">WATCH</h3>
+                    <h3 className="font-pixel text-xs text-foreground mb-1">
+                      WATCH
+                    </h3>
                     <p className="text-sm text-muted-foreground font-body">
                       Cute animals will walk across the screen. Remember them!
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-4 p-4 bg-pastel-mint/50 rounded-xl border border-secondary/20">
-                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground font-pixel shrink-0">2</div>
+                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground font-pixel shrink-0">
+                    2
+                  </div>
                   <div>
-                    <h3 className="font-pixel text-xs text-foreground mb-1">MEMORIZE</h3>
+                    <h3 className="font-pixel text-xs text-foreground mb-1">
+                      MEMORIZE
+                    </h3>
                     <p className="text-sm text-muted-foreground font-body">
-                      Cards will show which animals appeared. Quick, memorize the order!
+                      Cards will show which animals appeared. Quick, memorize
+                      the order!
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-4 p-4 bg-pastel-lavender/50 rounded-xl border border-accent/20">
-                  <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-pixel shrink-0">3</div>
+                  <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-pixel shrink-0">
+                    3
+                  </div>
                   <div>
-                    <h3 className="font-pixel text-xs text-foreground mb-1">GUESS</h3>
+                    <h3 className="font-pixel text-xs text-foreground mb-1">
+                      GUESS
+                    </h3>
                     <p className="text-sm text-muted-foreground font-body">
-                      Pick the animals in the correct order they walked by! You get 3 tries.
+                      Pick the animals in the correct order they walked by! You
+                      get 3 tries.
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-4 p-4 bg-pastel-pink/50 rounded-xl border border-primary/20">
                   <div className="w-10 h-10 rounded-full bg-warning flex items-center justify-center shrink-0">
                     <Sparkles size={18} className="text-warning-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-pixel text-xs text-foreground mb-1">USE PENDANTS</h3>
+                    <h3 className="font-pixel text-xs text-foreground mb-1">
+                      USE PENDANTS
+                    </h3>
                     <p className="text-sm text-muted-foreground font-body">
-                      Buy magical pendants from the shop to help you win! Each pendant has a special power.
+                      Buy magical pendants from the shop to help you win! Each
+                      pendant has a special power.
                     </p>
                   </div>
                 </div>
               </div>
-              
+
               <CuteButton
                 variant="primary"
                 size="md"
@@ -1029,7 +1209,7 @@ export const Dashboard = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {/* Logout confirmation modal */}
       <AnimatePresence>
         {showLogoutConfirm && (
@@ -1054,28 +1234,35 @@ export const Dashboard = () => {
               >
                 <Penguin size={80} isSad />
               </motion.div>
-              
-              <h2 className="font-pixel text-lg text-foreground mb-2">LOGOUT?</h2>
+
+              <h2 className="font-pixel text-lg text-foreground mb-2">
+                LOGOUT?
+              </h2>
               <p className="text-muted-foreground text-sm mb-2 font-body">
-                This will reset <span className="text-destructive font-semibold">ALL</span> your progress:
+                This will reset{" "}
+                <span className="text-destructive font-semibold">ALL</span> your
+                progress:
               </p>
               <div className="bg-destructive/10 rounded-xl p-3 mb-4">
                 <ul className="text-sm text-muted-foreground font-body space-y-1">
                   <li className="flex items-center justify-center gap-2">
-                    <span className="text-warning">💰</span> {gameState.coins} coins will be lost
+                    <span className="text-warning">💰</span> {gameState.coins}{" "}
+                    coins will be lost
                   </li>
                   <li className="flex items-center justify-center gap-2">
-                    <span className="text-warning">🏆</span> High score: {gameState.highScore}
+                    <span className="text-warning">🏆</span> High score:{" "}
+                    {gameState.highScore}
                   </li>
                   <li className="flex items-center justify-center gap-2">
-                    <span className="text-warning">🎮</span> {gameState.gamesPlayed} games played
+                    <span className="text-warning">🎮</span>{" "}
+                    {gameState.gamesPlayed} games played
                   </li>
                 </ul>
               </div>
               <p className="text-destructive text-xs mb-6 font-body">
                 This cannot be undone!
               </p>
-              
+
               <div className="flex gap-3">
                 <CuteButton
                   variant="ghost"

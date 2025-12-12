@@ -1,3 +1,4 @@
+import React from "react";
 import { motion } from "framer-motion";
 
 export type PendantType = "hint" | "freeze" | "double" | "shield" | "reveal";
@@ -12,7 +13,16 @@ interface PendantProps {
   isActivating?: boolean;
 }
 
-const pendantData: Record<PendantType, { name: string; color: string; glowColor: string; icon: JSX.Element; description: string }> = {
+const pendantData: Record<
+  PendantType,
+  {
+    name: string;
+    color: string;
+    glowColor: string;
+    icon: React.ReactNode;
+    description: string;
+  }
+> = {
   hint: {
     name: "Hint Star",
     color: "#FFD700",
@@ -104,12 +114,30 @@ const pendantData: Record<PendantType, { name: string; color: string; glowColor:
     description: "Shows all cards briefly",
     icon: (
       <svg viewBox="0 0 40 40" className="w-full h-full">
-        <ellipse cx="20" cy="20" rx="16" ry="10" fill="#E1BEE7" stroke="#B24BF3" strokeWidth="2" />
+        <ellipse
+          cx="20"
+          cy="20"
+          rx="16"
+          ry="10"
+          fill="#E1BEE7"
+          stroke="#B24BF3"
+          strokeWidth="2"
+        />
         <circle cx="20" cy="20" r="7" fill="#B24BF3" />
         <circle cx="20" cy="20" r="4" fill="#2D2D2D" />
         <circle cx="22" cy="18" r="2" fill="#FFF" />
-        <path d="M4 20 Q20 8 36 20" fill="none" stroke="#B24BF3" strokeWidth="2" />
-        <path d="M4 20 Q20 32 36 20" fill="none" stroke="#B24BF3" strokeWidth="2" />
+        <path
+          d="M4 20 Q20 8 36 20"
+          fill="none"
+          stroke="#B24BF3"
+          strokeWidth="2"
+        />
+        <path
+          d="M4 20 Q20 32 36 20"
+          fill="none"
+          stroke="#B24BF3"
+          strokeWidth="2"
+        />
       </svg>
     ),
   },
@@ -160,39 +188,39 @@ export const Pendant = ({
       <motion.div
         className="absolute -inset-3 rounded-full blur-xl"
         style={{ backgroundColor: data.glowColor }}
-        animate={{ 
+        animate={{
           opacity: isActivating ? [0.7, 1, 0.7] : [0.3, 0.6, 0.3],
           scale: isActivating ? [1, 1.4, 1] : [1, 1.15, 1],
         }}
         transition={{ duration: isActivating ? 0.3 : 2, repeat: Infinity }}
       />
-      
+
       {/* Middle aura ring - NEW */}
       <motion.div
         className="absolute -inset-2 rounded-full blur-lg"
-        style={{ 
+        style={{
           background: `radial-gradient(circle, ${data.glowColor} 0%, transparent 60%)`,
         }}
-        animate={{ 
+        animate={{
           opacity: [0.4, 0.7, 0.4],
           rotate: [0, 360],
         }}
-        transition={{ 
+        transition={{
           opacity: { duration: 2, repeat: Infinity },
-          rotate: { duration: 8, repeat: Infinity, ease: "linear" }
+          rotate: { duration: 8, repeat: Infinity, ease: "linear" },
         }}
       />
-      
+
       {/* Inner magical glow - ENHANCED */}
       <motion.div
         className="absolute inset-0 rounded-full"
-        style={{ 
+        style={{
           background: `radial-gradient(circle, ${data.glowColor} 0%, ${data.color}40 40%, transparent 70%)`,
         }}
         animate={{ opacity: [0.4, 0.8, 0.4] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       />
-      
+
       {/* Rotating sparkle ring - NEW */}
       {!disabled && (
         <motion.div
@@ -206,48 +234,50 @@ export const Pendant = ({
               className="absolute w-1.5 h-1.5 rounded-full"
               style={{
                 backgroundColor: data.color,
-                left: '50%',
-                top: '50%',
-                transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-${size/2 + 4}px)`,
+                left: "50%",
+                top: "50%",
+                transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-${size / 2 + 4}px)`,
               }}
-              animate={{ 
+              animate={{
                 scale: [0.8, 1.5, 0.8],
                 opacity: [0.6, 1, 0.6],
               }}
-              transition={{ duration: 1.5, repeat: Infinity, delay: angle / 360 }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: angle / 360,
+              }}
             />
           ))}
         </motion.div>
       )}
-      
+
       {/* Pendant background with gradient */}
       <div
         className="absolute inset-1 rounded-full border-3 shadow-xl"
-        style={{ 
+        style={{
           borderColor: data.color,
           background: `linear-gradient(135deg, ${data.color}15 0%, #FFFFFF 50%, ${data.color}15 100%)`,
         }}
       />
-      
+
       {/* Shimmer effect - ENHANCED */}
       <motion.div
         className="absolute inset-2 rounded-full overflow-hidden"
         animate={{ opacity: [0, 0.7, 0] }}
         transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
       >
-        <motion.div 
+        <motion.div
           className="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-transparent"
-          style={{ transform: 'rotate(45deg)' }}
-          animate={{ x: ['-200%', '200%'] }}
+          style={{ transform: "rotate(45deg)" }}
+          animate={{ x: ["-200%", "200%"] }}
           transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
         />
       </motion.div>
-      
+
       {/* Icon with glow */}
-      <div className="absolute inset-3 filter drop-shadow-lg">
-        {data.icon}
-      </div>
-      
+      <div className="absolute inset-3 filter drop-shadow-lg">{data.icon}</div>
+
       {/* Magic particles when owned > 0 - MORE particles */}
       {owned > 0 && !disabled && (
         <div className="absolute inset-0">
@@ -256,7 +286,7 @@ export const Pendant = ({
           ))}
         </div>
       )}
-      
+
       {/* Activation burst effect - ENHANCED */}
       {isActivating && (
         <>
@@ -264,16 +294,16 @@ export const Pendant = ({
             <motion.div
               key={i}
               className="absolute w-2.5 h-2.5 rounded-full"
-              style={{ 
+              style={{
                 backgroundColor: data.color,
-                left: '50%',
-                top: '50%',
+                left: "50%",
+                top: "50%",
                 boxShadow: `0 0 10px ${data.color}`,
               }}
-              initial={{ x: '-50%', y: '-50%', scale: 0 }}
+              initial={{ x: "-50%", y: "-50%", scale: 0 }}
               animate={{
-                x: `calc(-50% + ${Math.cos(i * Math.PI / 6) * 50}px)`,
-                y: `calc(-50% + ${Math.sin(i * Math.PI / 6) * 50}px)`,
+                x: `calc(-50% + ${Math.cos((i * Math.PI) / 6) * 50}px)`,
+                y: `calc(-50% + ${Math.sin((i * Math.PI) / 6) * 50}px)`,
                 scale: [0, 1.3, 0],
                 opacity: [1, 0.9, 0],
               }}
@@ -282,14 +312,14 @@ export const Pendant = ({
           ))}
         </>
       )}
-      
+
       {/* Count badge with glow */}
       {showCount && (
         <motion.div
           className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center
             text-[10px] font-pixel text-primary-foreground bg-game-brown border-2 border-cloud shadow-lg"
-          style={{ 
-            boxShadow: owned > 0 ? `0 0 15px ${data.color}80` : undefined 
+          style={{
+            boxShadow: owned > 0 ? `0 0 15px ${data.color}80` : undefined,
           }}
           animate={owned > 0 ? { scale: [1, 1.15, 1] } : {}}
           transition={{ duration: 2, repeat: Infinity }}
@@ -320,28 +350,38 @@ export const PendantCard = ({
     <motion.div
       className="bg-gradient-to-br from-pastel-cream to-cloud rounded-2xl p-4 border-3 border-game-brown-light
         shadow-md flex flex-col items-center gap-2 relative overflow-hidden group cursor-pointer"
-      whileHover={{ y: -6, boxShadow: `0 12px 30px ${data.glowColor}`, scale: 1.02 }}
+      whileHover={{
+        y: -6,
+        boxShadow: `0 12px 30px ${data.glowColor}`,
+        scale: 1.02,
+      }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       {/* Background glow */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0 opacity-10 group-hover:opacity-25 transition-opacity"
-        style={{ background: `radial-gradient(circle at center, ${data.color} 0%, transparent 70%)` }}
+        style={{
+          background: `radial-gradient(circle at center, ${data.color} 0%, transparent 70%)`,
+        }}
       />
-      
+
       {/* Shimmer effect on hover */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100"
-        style={{ transform: 'translateX(-100%)' }}
-        animate={{ translateX: ['-100%', '100%'] }}
+        style={{ transform: "translateX(-100%)" }}
+        animate={{ translateX: ["-100%", "100%"] }}
         transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
       />
-      
+
       <Pendant type={type} size={50} owned={owned} showCount={false} />
-      <h3 className="font-pixel text-[10px] text-foreground text-center group-hover:text-primary transition-colors">{data.name}</h3>
-      <p className="text-xs text-muted-foreground text-center leading-tight">{data.description}</p>
-      <motion.div 
+      <h3 className="font-pixel text-[10px] text-foreground text-center group-hover:text-primary transition-colors">
+        {data.name}
+      </h3>
+      <p className="text-xs text-muted-foreground text-center leading-tight">
+        {data.description}
+      </p>
+      <motion.div
         className="flex items-center gap-1"
         animate={{ scale: [1, 1.05, 1] }}
         transition={{ duration: 2, repeat: Infinity }}
@@ -362,9 +402,9 @@ export const PendantCard = ({
       >
         BUY
       </motion.button>
-      <div className="text-[10px] text-muted-foreground">Owned: <span className="text-primary font-semibold">{owned}</span></div>
+      <div className="text-[10px] text-muted-foreground">
+        Owned: <span className="text-primary font-semibold">{owned}</span>
+      </div>
     </motion.div>
   );
 };
-
-export { pendantData };

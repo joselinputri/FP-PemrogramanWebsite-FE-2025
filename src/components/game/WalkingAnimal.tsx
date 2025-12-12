@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { ANIMALS, AnimalId } from "../animals/AnimalCollection";
+import { ANIMALS } from "../animals/AnimalCollection";
+import type { AnimalId } from "../animals/AnimalCollection";
 
 interface WalkingAnimalProps {
   animalId: AnimalId;
@@ -49,16 +50,17 @@ export const WalkingAnimal = ({
         }}
       >
         {/* Glow effect behind animal */}
-        <div 
+        <div
           className="absolute inset-0 -z-10 rounded-full blur-xl opacity-30"
           style={{
-            background: "radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%)",
             transform: "scale(1.3)",
           }}
         />
         <AnimalComponent size={size} isWalking />
       </motion.div>
-      
+
       {/* Cute dust puffs - enhanced */}
       <motion.div
         className="absolute -bottom-2 left-1/2 -translate-x-1/2"
@@ -72,12 +74,33 @@ export const WalkingAnimal = ({
         }}
       >
         <svg width="70" height="30" viewBox="0 0 70 30">
-          <ellipse cx="15" cy="22" rx="10" ry="6" fill="#E8DCC8" opacity="0.6" />
-          <ellipse cx="35" cy="18" rx="14" ry="8" fill="#E8DCC8" opacity="0.5" />
-          <ellipse cx="55" cy="22" rx="10" ry="6" fill="#E8DCC8" opacity="0.6" />
+          <ellipse
+            cx="15"
+            cy="22"
+            rx="10"
+            ry="6"
+            fill="#E8DCC8"
+            opacity="0.6"
+          />
+          <ellipse
+            cx="35"
+            cy="18"
+            rx="14"
+            ry="8"
+            fill="#E8DCC8"
+            opacity="0.5"
+          />
+          <ellipse
+            cx="55"
+            cy="22"
+            rx="10"
+            ry="6"
+            fill="#E8DCC8"
+            opacity="0.6"
+          />
         </svg>
       </motion.div>
-      
+
       {/* Multiple sparkle trail */}
       {[0, 1, 2].map((i) => (
         <motion.div
@@ -96,15 +119,15 @@ export const WalkingAnimal = ({
           }}
         >
           <svg width="14" height="14" viewBox="0 0 14 14">
-            <polygon 
-              points="7,1 8.5,5 13,5.5 9.5,8 10.5,12.5 7,10 3.5,12.5 4.5,8 1,5.5 5.5,5" 
+            <polygon
+              points="7,1 8.5,5 13,5.5 9.5,8 10.5,12.5 7,10 3.5,12.5 4.5,8 1,5.5 5.5,5"
               fill={["#FFE082", "#FFB6C1", "#98FB98"][i]}
               opacity="0.8"
             />
           </svg>
         </motion.div>
       ))}
-      
+
       {/* Name label below animal */}
       <motion.div
         className="absolute -bottom-8 left-1/2 -translate-x-1/2"
@@ -113,7 +136,9 @@ export const WalkingAnimal = ({
         transition={{ delay: delay + 0.5 }}
       >
         <div className="bg-card/90 backdrop-blur-sm px-3 py-1 rounded-full border-2 border-border shadow-sm">
-          <span className="font-pixel text-[10px] text-foreground">{animal?.name}</span>
+          <span className="font-pixel text-[10px] text-foreground">
+            {animal?.name}
+          </span>
         </div>
       </motion.div>
     </motion.div>

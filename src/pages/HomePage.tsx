@@ -53,6 +53,7 @@ export default function HomePage() {
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = !!(token && user);
 
+  // FIXED: Initialize dengan array kosong untuk menghindari undefined
   const [games, setGames] = useState<Game[]>([]);
   const [gameTemplates, setGameTemplates] = useState<GameTemplate[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -75,7 +76,10 @@ export default function HomePage() {
     const fetchGameTemplates = async () => {
       try {
         const response = await api.get("/api/game/template");
-        setGameTemplates(response.data.data);
+        // FIXED: Tambahkan pengecekan data
+        if (response.data && Array.isArray(response.data.data)) {
+          setGameTemplates(response.data.data);
+        }
       } catch (err) {
         console.error("Failed to fetch game templates:", err);
       }
@@ -105,20 +109,29 @@ export default function HomePage() {
         const response = await api.get(url);
         console.log("Fetched games data:", response.data);
 
-        setGames(
-          response.data.data.map(
-            (g: Game) =>
-              ({
-                ...g,
-                total_liked: g.total_liked || 0,
-                total_played: g.total_played || 0,
-                is_liked: g.is_game_liked || false,
-              }) as Game,
-          ),
-        );
+        // FIXED: Tambahkan validasi response data
+        if (response.data && Array.isArray(response.data.data)) {
+          setGames(
+            response.data.data.map(
+              (g: Game) =>
+                ({
+                  ...g,
+                  total_liked: g.total_liked || 0,
+                  total_played: g.total_played || 0,
+                  is_liked: g.is_game_liked || false,
+                }) as Game,
+            ),
+          );
+        } else {
+          // Jika response tidak sesuai, set games ke array kosong
+          console.warn("Unexpected API response format:", response.data);
+          setGames([]);
+        }
       } catch (err) {
         setError("Failed to fetch games. Please try again later.");
         console.error("Fetch error:", err);
+        // FIXED: Set games ke array kosong saat error
+        setGames([]);
       } finally {
         if (initialLoading) {
           setInitialLoading(false);
@@ -457,28 +470,36 @@ export default function HomePage() {
                   All Types
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {gameTemplates.map((template) => (
-                  <DropdownMenuItem
-                    key={template.id}
-                    onClick={() =>
-                      setGameTypeSlug(
-                        gameTypeSlug === template.slug ? null : template.slug,
-                      )
-                    }
-                    className={
-                      gameTypeSlug === template.slug ? "bg-sky-100" : ""
-                    }
-                  >
-                    {template.name}
+                {/* FIXED: Tambahkan pengecekan array */}
+                {gameTemplates && gameTemplates.length > 0 ? (
+                  gameTemplates.map((template) => (
+                    <DropdownMenuItem
+                      key={template.id}
+                      onClick={() =>
+                        setGameTypeSlug(
+                          gameTypeSlug === template.slug ? null : template.slug,
+                        )
+                      }
+                      className={
+                        gameTypeSlug === template.slug ? "bg-sky-100" : ""
+                      }
+                    >
+                      {template.name}
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <DropdownMenuItem disabled>
+                    No templates available
                   </DropdownMenuItem>
-                ))}
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
 
+        {/* FIXED: Tambahkan pengecekan array sebelum map */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {games.length > 0 ? (
+          {games && games.length > 0 ? (
             games.map((game: Game) => <GameCard key={game.id} game={game} />)
           ) : (
             <div className="col-span-full text-center py-12">

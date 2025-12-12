@@ -1,5 +1,6 @@
+import { ANIMALS } from "../animals/AnimalCollection";
+import type { AnimalId } from "../animals/AnimalCollection";
 import { motion, AnimatePresence } from "framer-motion";
-import { ANIMALS, AnimalId } from "../animals/AnimalCollection";
 
 interface MemoryCardProps {
   animalId?: AnimalId;
@@ -50,60 +51,59 @@ export const MemoryCard = ({
         isWrong
           ? { x: [-10, 10, -10, 10, 0], transition: { duration: 0.45 } }
           : isCorrect
-          ? { scale: [1, 1.12, 1], transition: { duration: 0.35, type: "spring" } }
-          : {}
+            ? {
+                scale: [1, 1.12, 1],
+                transition: { duration: 0.35, type: "spring" },
+              }
+            : {}
       }
     >
-      {/* Card face - Always showing animal now */}
+      {/* Card Frame */}
       <div
-        className={`absolute inset-0 rounded-2xl flex flex-col items-center justify-center overflow-hidden
+        className={`
+          absolute inset-0 rounded-2xl flex flex-col items-center justify-center overflow-hidden
           shadow-lg transition-all duration-200
-          ${isCorrect 
-            ? "border-4 border-success ring-4 ring-success/30" 
-            : isWrong 
-            ? "border-4 border-destructive ring-4 ring-destructive/30" 
-            : isSelected
-            ? "border-4 border-warning ring-4 ring-warning/30"
-            : "border-3 border-game-brown-light/50 group-hover:border-primary/70 group-hover:shadow-xl"
+          ${
+            isCorrect
+              ? "border-4 border-success ring-4 ring-success/30"
+              : isWrong
+                ? "border-4 border-destructive ring-4 ring-destructive/30"
+                : isSelected
+                  ? "border-4 border-warning ring-4 ring-warning/30"
+                  : "border-3 border-game-brown-light/50 group-hover:border-primary/70 group-hover:shadow-xl"
           }
         `}
-        style={{ 
-          background: isCorrect 
+        style={{
+          background: isCorrect
             ? "linear-gradient(165deg, #E8F5E9 0%, #C8E6C9 50%, #A5D6A7 100%)"
             : isWrong
-            ? "linear-gradient(165deg, #FFEBEE 0%, #FFCDD2 50%, #EF9A9A 100%)"
-            : "linear-gradient(165deg, #FFFAF0 0%, #FFF8E7 50%, #FFECD2 100%)"
+              ? "linear-gradient(165deg, #FFEBEE 0%, #FFCDD2 50%, #EF9A9A 100%)"
+              : "linear-gradient(165deg, #FFFAF0 0%, #FFF8E7 50%, #FFECD2 100%)",
         }}
       >
-        {/* Hover shine effect */}
+        {/* Hover shine */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{ transform: 'translateX(-100%)' }}
-          animate={{ translateX: ['-100%', '100%'] }}
+          style={{ transform: "translateX(-100%)" }}
+          animate={{ translateX: ["-100%", "100%"] }}
           transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
         />
-        {/* Decorative corners */}
+
+        {/* Decorative Corners */}
         <div className="absolute top-1.5 left-1.5 w-4 h-4 border-t-2 border-l-2 border-game-brown/15 rounded-tl-lg" />
         <div className="absolute top-1.5 right-1.5 w-4 h-4 border-t-2 border-r-2 border-game-brown/15 rounded-tr-lg" />
         <div className="absolute bottom-1.5 left-1.5 w-4 h-4 border-b-2 border-l-2 border-game-brown/15 rounded-bl-lg" />
         <div className="absolute bottom-1.5 right-1.5 w-4 h-4 border-b-2 border-r-2 border-game-brown/15 rounded-br-lg" />
-        
-        {/* Inner decorative dots */}
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
-          {[...Array(4)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1.5 h-1.5 rounded-full bg-game-brown"
-              style={{
-                left: `${20 + (i % 2) * 60}%`,
-                top: `${20 + Math.floor(i / 2) * 60}%`,
-              }}
-            />
-          ))}
-        </div>
 
-        {/* Animal - centered and properly proportioned */}
-        {AnimalComponent && (
+        {/* BACK SIDE */}
+        {!isFlipped && (
+          <div className="absolute inset-0 rounded-2xl bg-game-brown/30 flex items-center justify-center">
+            <span className="font-pixel text-game-brown text-xl">?</span>
+          </div>
+        )}
+
+        {/* FRONT SIDE - ANIMAL */}
+        {isFlipped && AnimalComponent && (
           <AnimatePresence>
             <motion.div
               className="flex items-center justify-center"
@@ -119,17 +119,23 @@ export const MemoryCard = ({
             </motion.div>
           </AnimatePresence>
         )}
-        
-        {/* Animal name label */}
-        <div className="absolute bottom-1 left-0 right-0 text-center">
-          <span className="font-pixel text-[8px] text-game-brown/60">{animal?.name}</span>
-        </div>
-        
-        {/* Order number badge */}
+
+        {/* Animal Label */}
+        {isFlipped && (
+          <div className="absolute bottom-1 left-0 right-0 text-center">
+            <span className="font-pixel text-[8px] text-game-brown/60">
+              {animal?.name}
+            </span>
+          </div>
+        )}
+
+        {/* Order Number */}
         {orderNumber !== undefined && (
           <motion.div
             className={`absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center font-pixel text-[10px] ${
-              isCorrect ? "bg-success text-white" : "bg-warning text-warning-foreground"
+              isCorrect
+                ? "bg-success text-white"
+                : "bg-warning text-warning-foreground"
             }`}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -139,38 +145,33 @@ export const MemoryCard = ({
           </motion.div>
         )}
 
-        {/* Success sparkles */}
-        {isCorrect && (
-          <>
-            {[...Array(10)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-2 h-2 rounded-full"
-                style={{
-                  backgroundColor: ["#FFD700", "#FF6B9D", "#4CAF50", "#87CEEB", "#FFB6C1"][i % 5],
-                }}
-                initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  scale: [0, 1.3, 0],
-                  x: [(Math.random() - 0.5) * 70],
-                  y: [(Math.random() - 0.5) * 70],
-                }}
-                transition={{ duration: 0.6, delay: i * 0.05 }}
-              />
-            ))}
-            {/* Glow effect */}
+        {/* Success Sparkles */}
+        {isCorrect &&
+          [...Array(10)].map((_, i) => (
             <motion.div
-              className="absolute inset-0 rounded-2xl"
-              style={{ boxShadow: "0 0 20px rgba(76, 175, 80, 0.5)" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.8, 0] }}
-              transition={{ duration: 0.7 }}
+              key={i}
+              className="absolute w-2 h-2 rounded-full"
+              style={{
+                backgroundColor: [
+                  "#FFD700",
+                  "#FF6B9D",
+                  "#4CAF50",
+                  "#87CEEB",
+                  "#FFB6C1",
+                ][i % 5],
+              }}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{
+                opacity: [0, 1, 0],
+                scale: [0, 1.3, 0],
+                x: [(Math.random() - 0.5) * 70],
+                y: [(Math.random() - 0.5) * 70],
+              }}
+              transition={{ duration: 0.6, delay: i * 0.05 }}
             />
-          </>
-        )}
+          ))}
 
-        {/* Wrong effect - subtle red flash + shake */}
+        {/* Wrong Effect */}
         {isWrong && (
           <>
             <motion.div
@@ -187,7 +188,12 @@ export const MemoryCard = ({
             >
               <svg width="40" height="40" viewBox="0 0 40 40">
                 <circle cx="20" cy="20" r="18" fill="rgba(239, 68, 68, 0.75)" />
-                <path d="M13 13 L27 27 M27 13 L13 27" stroke="white" strokeWidth="3" strokeLinecap="round" />
+                <path
+                  d="M13 13 L27 27 M27 13 L13 27"
+                  stroke="white"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
               </svg>
             </motion.div>
           </>

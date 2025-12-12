@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { X, ShoppingBag, Sparkles } from "lucide-react";
-import { PendantCard, PendantType } from "./Pendant";
+import type { PendantType } from "./Pendant";
 import { CuteButton } from "../ui/CuteButton";
 
 interface ShopProps {
@@ -22,9 +22,25 @@ const PENDANT_PRICES: Record<PendantType, number> = {
 // Custom coin icon
 const CoinIcon = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="11" fill="#FFD700" stroke="#E5A800" strokeWidth="1.5" />
+    <circle
+      cx="12"
+      cy="12"
+      r="11"
+      fill="#FFD700"
+      stroke="#E5A800"
+      strokeWidth="1.5"
+    />
     <circle cx="12" cy="12" r="7" fill="#FFEC8B" />
-    <text x="12" y="16" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#B8860B">$</text>
+    <text
+      x="12"
+      y="16"
+      textAnchor="middle"
+      fontSize="11"
+      fontWeight="bold"
+      fill="#B8860B"
+    >
+      $
+    </text>
   </svg>
 );
 
@@ -63,10 +79,15 @@ export const Shop = ({
             </motion.div>
             <h2 className="font-pixel text-lg text-foreground">MAGIC SHOP</h2>
           </div>
-          
-          <CuteButton variant="ghost" size="sm" onClick={onClose} icon={<X size={16} />} />
+
+          <CuteButton
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            icon={<X size={16} />}
+          />
         </div>
-        
+
         {/* Coins display */}
         <div className="flex justify-center mb-5">
           <motion.div
@@ -82,10 +103,12 @@ export const Shop = ({
         {/* Decorative sparkles */}
         <div className="flex items-center justify-center gap-2 mb-4">
           <Sparkles size={14} className="text-warning" />
-          <span className="text-xs text-muted-foreground font-body">Magical pendants to help you win!</span>
+          <span className="text-xs text-muted-foreground font-body">
+            Magical pendants to help you win!
+          </span>
           <Sparkles size={14} className="text-warning" />
         </div>
-        
+
         {/* Pendants grid - 2x3 layout */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {(Object.keys(PENDANT_PRICES) as PendantType[]).map((type, index) => (
@@ -105,9 +128,9 @@ export const Shop = ({
             </motion.div>
           ))}
         </div>
-        
+
         {/* Info */}
-        <motion.div 
+        <motion.div
           className="mt-5 p-3 bg-muted/40 rounded-xl border border-border"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -116,7 +139,9 @@ export const Shop = ({
           <p className="text-xs text-muted-foreground text-center font-body">
             Complete games to earn more coins!
             <br />
-            <span className="text-primary">Each correct round = 10 coins + bonus!</span>
+            <span className="text-primary">
+              Each correct round = 10 coins + bonus!
+            </span>
           </p>
         </motion.div>
       </motion.div>
