@@ -21,6 +21,7 @@ import EditAnagram from "./pages/Anagram/EditAnagram";
 // 📌 TAMBAHAN 1: Import Komponen Game Pair or No Pair
 import PairOrNoPairGame from "./pages/pair-or-no-pair";
 import CreatePairOrNoPair from "./pages/pair-or-no-pair/create";
+import WatchMemorize from "./pages/Index";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           path="/pair-or-no-pair/play/:gameId"
           element={<PairOrNoPairGame />}
         />
+        <Route path="/watch-memorize/play/:id" element={<WatchMemorize />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<ProfilePage />} />
