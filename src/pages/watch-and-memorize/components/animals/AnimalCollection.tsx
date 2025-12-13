@@ -1328,13 +1328,3 @@ export const Hedgehog = ({
 
 export type AnimalId = "penguin" | "cow" | "fox" | "bear" | "dog" | "duck" | "lamb" | "hedgehog";
 
-export const ANIMALS: { id: AnimalId; name: string; component: React.FC<AnimalProps> }[] = [
-  { id: "penguin", name: "Penguin", component: CardPenguin },
-  { id: "cow", name: "Cow", component: Cow },
-  { id: "fox", name: "Fox", component: Fox },
-  { id: "bear", name: "Bear", component: Bear },
-  { id: "dog", name: "Shiba", component: Dog },
-  { id: "duck", name: "Ducky", component: Duck },
-  { id: "lamb", name: "Lamb", component: Lamb },
-  { id: "hedgehog", name: "Hedgie", component: Hedgehog },
-];

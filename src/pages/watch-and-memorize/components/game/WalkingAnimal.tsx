@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ANIMALS } from "../animals/AnimalCollection";
+import { ANIMALS } from "../animals/animalData";
 import type { AnimalId } from "../animals/AnimalCollection";
 
 interface WalkingAnimalProps {

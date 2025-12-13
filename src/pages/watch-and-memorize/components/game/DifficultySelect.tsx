@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Zap, Target, Flame } from "lucide-react";
 
 export type Difficulty = "easy" | "normal" | "hard";
 
@@ -9,35 +8,6 @@ interface DifficultyConfig {
   totalRounds: number;
   shuffleSpeed: number;
   guessTimeLimit: number;
-}
-
-export const DIFFICULTY_CONFIGS: Record<Difficulty, DifficultyConfig> = {
-  easy: {
-    animalsToWatch: 3,
-    memorizationTime: 6000,
-    totalRounds: 1,
-    shuffleSpeed: 1200,
-    guessTimeLimit: 25,
-  },
-  normal: {
-    animalsToWatch: 4,
-    memorizationTime: 5000,
-    totalRounds: 3,
-    shuffleSpeed: 800,
-    guessTimeLimit: 15,
-  },
-  hard: {
-    animalsToWatch: 5,
-    memorizationTime: 4000,
-    totalRounds: 4,
-    shuffleSpeed: 500,
-    guessTimeLimit: 10,
-  },
-};
-
-interface DifficultySelectProps {
-  selected: Difficulty;
-  onSelect: (difficulty: Difficulty) => void;
 }
 
 export const DifficultySelect = ({ selected, onSelect }: DifficultySelectProps) => {

@@ -25,7 +25,7 @@ import {
   LogOut,
   RotateCcw,
 } from "lucide-react";
-import { ANIMALS } from "../animals/AnimalCollection";
+import { ANIMALS } from "../animals/animalData";
 
 type View = "dashboard" | "playing" | "scoreboard" | "intro" | "leaderboard";
 

@@ -1,4 +1,4 @@
-import { ANIMALS } from "../animals/AnimalCollection";
+import { ANIMALS } from "../animals/animalData";
 import type { AnimalId } from "../animals/AnimalCollection";
 import { motion, AnimatePresence } from "framer-motion";
 

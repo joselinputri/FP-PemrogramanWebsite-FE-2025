@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ANIMALS } from "../animals/AnimalCollection";
+import { ANIMALS } from "../animals/animalData";
 import type { AnimalId } from "../animals/AnimalCollection";
 import { GameBackground } from "./GameBackground";
 import { MemoryCard } from "./MemoryCard";

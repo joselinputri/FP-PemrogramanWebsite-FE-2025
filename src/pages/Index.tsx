@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Dashboard } from "@/components/game/Dashboard";
-import { GameBackground } from "@/components/game/GameBackground";
-import { Penguin } from "@/components/animals/Penguin";
+import { Dashboard } from "@/pages/watch-and-memorize/components/game/Dashboard";
+import { GameBackground } from "@/pages/watch-and-memorize/components/game/GameBackground";
+import { Penguin } from "@/pages/watch-and-memorize/components/animals/Penguin";
 import { Sparkles } from "lucide-react";
 
 const Index = () => {
