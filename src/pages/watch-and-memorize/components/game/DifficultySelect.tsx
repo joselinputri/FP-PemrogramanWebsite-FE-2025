@@ -1,37 +1,36 @@
 import { motion } from "framer-motion";
 
-export type Difficulty = "easy" | "normal" | "hard";
-
-interface DifficultyConfig {
-  animalsToWatch: number;
-  memorizationTime: number;
-  totalRounds: number;
-  shuffleSpeed: number;
-  guessTimeLimit: number;
-}
-
-export const DifficultySelect = ({ selected, onSelect }: DifficultySelectProps) => {
-  const difficulties: { id: Difficulty; label: string; icon: React.ReactNode; color: string; description: string }[] = [
-    { 
-      id: "easy", 
-      label: "EASY", 
-      icon: <Zap size={18} />, 
+export const DifficultySelect = ({
+  selected,
+  onSelect,
+}: DifficultySelectProps) => {
+  const difficulties: {
+    id: Difficulty;
+    label: string;
+    icon: React.ReactNode;
+    color: string;
+    description: string;
+  }[] = [
+    {
+      id: "easy",
+      label: "EASY",
+      icon: <Zap size={18} />,
       color: "from-pastel-mint to-success/60",
-      description: "3 animals, 1 round"
+      description: "3 animals, 1 round",
     },
-    { 
-      id: "normal", 
-      label: "NORMAL", 
-      icon: <Target size={18} />, 
+    {
+      id: "normal",
+      label: "NORMAL",
+      icon: <Target size={18} />,
       color: "from-pastel-blue to-secondary/60",
-      description: "4 animals, balanced"
+      description: "4 animals, balanced",
     },
-    { 
-      id: "hard", 
-      label: "HARD", 
-      icon: <Flame size={18} />, 
+    {
+      id: "hard",
+      label: "HARD",
+      icon: <Flame size={18} />,
       color: "from-pastel-coral to-destructive/60",
-      description: "5 animals, fast pace"
+      description: "5 animals, fast pace",
     },
   ];
 
@@ -50,10 +49,14 @@ export const DifficultySelect = ({ selected, onSelect }: DifficultySelectProps) 
           onClick={() => onSelect(diff.id)}
         >
           <div className="flex flex-col items-center gap-1">
-            <div className={`${selected === diff.id ? "text-foreground" : "text-muted-foreground"}`}>
+            <div
+              className={`${selected === diff.id ? "text-foreground" : "text-muted-foreground"}`}
+            >
               {diff.icon}
             </div>
-            <span className={`font-pixel text-[9px] ${selected === diff.id ? "text-foreground" : "text-muted-foreground"}`}>
+            <span
+              className={`font-pixel text-[9px] ${selected === diff.id ? "text-foreground" : "text-muted-foreground"}`}
+            >
               {diff.label}
             </span>
             <span className="text-[8px] text-muted-foreground">

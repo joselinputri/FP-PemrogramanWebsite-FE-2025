@@ -1,7 +1,15 @@
 import { motion } from "framer-motion";
 import { X, ShoppingBag, Sparkles } from "lucide-react";
-import type { PendantType } from "./Pendant";
+import { PendantCard, type PendantType } from "./Pendant";
 import { CuteButton } from "../ui/CuteButton";
+
+export interface ShopConfig {
+  hint: { price: number; available: boolean };
+  freeze: { price: number; available: boolean };
+  double: { price: number; available: boolean };
+  shield: { price: number; available: boolean };
+  reveal: { price: number; available: boolean };
+}
 
 interface ShopProps {
   isOpen: boolean;
@@ -9,15 +17,8 @@ interface ShopProps {
   coins: number;
   pendants: Record<PendantType, number>;
   onBuyPendant: (type: PendantType, price: number) => void;
+  shopConfig: ShopConfig;
 }
-
-const PENDANT_PRICES: Record<PendantType, number> = {
-  hint: 50,
-  freeze: 75,
-  double: 100,
-  shield: 80,
-  reveal: 120,
-};
 
 // Custom coin icon
 const CoinIcon = ({ size = 24 }: { size?: number }) => (
@@ -50,8 +51,18 @@ export const Shop = ({
   coins,
   pendants,
   onBuyPendant,
+  shopConfig, // ✅ Destructure shopConfig
 }: ShopProps) => {
   if (!isOpen) return null;
+
+  // ✅ Create PENDANT_PRICES from shopConfig
+  const PENDANT_PRICES: Record<PendantType, number> = {
+    hint: shopConfig.hint.price,
+    freeze: shopConfig.freeze.price,
+    double: shopConfig.double.price,
+    shield: shopConfig.shield.price,
+    reveal: shopConfig.reveal.price,
+  };
 
   return (
     <motion.div
@@ -111,22 +122,30 @@ export const Shop = ({
 
         {/* Pendants grid - 2x3 layout */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {(Object.keys(PENDANT_PRICES) as PendantType[]).map((type, index) => (
-            <motion.div
-              key={type}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <PendantCard
-                type={type}
-                owned={pendants[type]}
-                price={PENDANT_PRICES[type]}
-                canAfford={coins >= PENDANT_PRICES[type]}
-                onBuy={() => onBuyPendant(type, PENDANT_PRICES[type])}
-              />
-            </motion.div>
-          ))}
+          {(Object.keys(PENDANT_PRICES) as PendantType[]).map((type, index) => {
+            // ✅ Check if this pendant is available in shopConfig
+            const isAvailable = shopConfig[type].available;
+
+            // Skip if not available
+            if (!isAvailable) return null;
+
+            return (
+              <motion.div
+                key={type}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <PendantCard
+                  type={type}
+                  owned={pendants[type]}
+                  price={PENDANT_PRICES[type]}
+                  canAfford={coins >= PENDANT_PRICES[type]}
+                  onBuy={() => onBuyPendant(type, PENDANT_PRICES[type])}
+                />
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Info */}

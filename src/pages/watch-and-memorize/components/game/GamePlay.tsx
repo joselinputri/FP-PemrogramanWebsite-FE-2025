@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ANIMALS } from "../animals/animalData";
-import type { AnimalId } from "../animals/AnimalCollection";
+import type { AnimalId, AnimalProps } from "../animals/animalData";
 import { GameBackground } from "./GameBackground";
 import { MemoryCard } from "./MemoryCard";
 import { WalkingAnimal } from "./WalkingAnimal";
@@ -9,8 +8,6 @@ import { CuteButton } from "../ui/CuteButton";
 import { Pendant } from "./Pendant";
 import type { PendantType } from "./Pendant";
 import { Penguin } from "../animals/Penguin";
-import { DIFFICULTY_CONFIGS } from "./DifficultySelect";
-import type { Difficulty } from "./DifficultySelect";
 import { useSoundEffects } from "../../hooks/useSoundEffects";
 import {
   X,
@@ -24,6 +21,16 @@ import {
   Sparkles,
 } from "lucide-react";
 
+// ✅ Tambahkan DifficultyConfig interface
+interface DifficultyConfig {
+  animalsToWatch: number;
+  memorizationTime: number;
+  totalRounds: number;
+  shuffleSpeed: number;
+  guessTimeLimit: number;
+}
+
+// ✅ FIXED interface dengan availableAnimals & difficultyConfig
 interface GamePlayProps {
   onExit: () => void;
   playerName: string;
@@ -35,7 +42,12 @@ interface GamePlayProps {
     totalQuestions: number,
     timeSpent: number,
   ) => void;
-  difficulty?: Difficulty;
+  availableAnimals: {
+    id: AnimalId;
+    name: string;
+    component: React.FC<AnimalProps>;
+  }[];
+  difficultyConfig: DifficultyConfig; // ✅ NEW
 }
 
 type GamePhase =
@@ -58,14 +70,17 @@ const StarIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+// ✅ FIXED function signature dengan props baru
 export const GamePlay = ({
   onExit,
   pendants,
   onUsePendant,
   onGameComplete,
-  difficulty = "normal",
+  availableAnimals, // ✅ NEW
+  difficultyConfig, // ✅ NEW
 }: GamePlayProps) => {
-  const config = DIFFICULTY_CONFIGS[difficulty];
+  // ✅ FIXED - pakai difficultyConfig dari prop, bukan DIFFICULTY_CONFIGS
+  const config = difficultyConfig;
 
   const [phase, setPhase] = useState<GamePhase>("watching");
   const [isPaused, setIsPaused] = useState(false);
@@ -111,15 +126,17 @@ export const GamePlay = ({
   const gameStartTime = useRef<number>(Date.now());
   const { playSound: playSfx } = useSoundEffects(!isMuted);
 
-  // Generate animals for this round
+  // ✅ FIXED - Generate animals for this round menggunakan availableAnimals
   const generateRound = useCallback(() => {
-    const availableAnimals = [...ANIMALS];
+    const availableAnimalsList = [...availableAnimals]; // ✅ Pakai dari prop
     const selected: AnimalId[] = [];
 
     for (let i = 0; i < config.animalsToWatch; i++) {
-      const randomIndex = Math.floor(Math.random() * availableAnimals.length);
-      selected.push(availableAnimals[randomIndex].id);
-      availableAnimals.splice(randomIndex, 1);
+      const randomIndex = Math.floor(
+        Math.random() * availableAnimalsList.length,
+      );
+      selected.push(availableAnimalsList[randomIndex].id);
+      availableAnimalsList.splice(randomIndex, 1);
     }
 
     setSequenceToRemember(selected);
@@ -134,7 +151,7 @@ export const GamePlay = ({
     setGuessTimeLeft(config.guessTimeLimit);
 
     // Create cards (include the correct ones + extra)
-    const allAnimals = ANIMALS.map((a) => a.id);
+    const allAnimals = availableAnimals.map((a) => a.id); // ✅ Pakai dari prop
     const otherAnimals = allAnimals.filter((a) => !selected.includes(a));
     const numExtraCards = Math.min(
       8 - config.animalsToWatch,
@@ -146,7 +163,7 @@ export const GamePlay = ({
     // Initial positions (0, 1, 2, 3...)
     setCardPositions(allCards.map((_, i) => i));
     setShuffledCards(allCards);
-  }, [config.animalsToWatch, config.guessTimeLimit]);
+  }, [config.animalsToWatch, config.guessTimeLimit, availableAnimals]); // ✅ Tambahkan availableAnimals di dependencies
 
   // Start the game
   useEffect(() => {
@@ -276,7 +293,7 @@ export const GamePlay = ({
     }, 150);
 
     return () => clearTimeout(gatherTimeout);
-  }, [phase, config.guessTimeLimit, playSfx, shuffledCards]);
+  }, [phase, config.guessTimeLimit, playSfx]);
 
   // Guess timer
   useEffect(() => {
@@ -458,19 +475,6 @@ export const GamePlay = ({
 
   // Handle exit with play count increment
   const handleExit = async () => {
-    try {
-      const apiUrl =
-        import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-      const endpoint =
-        import.meta.env.VITE_API_PLAY_COUNT_ENDPOINT || "/api/games/play-count";
-      await fetch(`${apiUrl}${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameSlug: "watch-and-memorize" }),
-      });
-    } catch (error) {
-      console.log("Failed to increment play count:", error);
-    }
     onExit();
   };
 
@@ -799,65 +803,70 @@ export const GamePlay = ({
               </p>
 
               {/* Elegant celebration for correct answer */}
-              {roundCorrect && (
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                  {[...Array(20)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute"
-                      style={{
-                        left: `${10 + Math.random() * 80}%`,
-                        top: -20,
-                      }}
-                      initial={{ y: 0, opacity: 1, scale: 0 }}
-                      animate={{
-                        y: 400,
-                        opacity: [1, 1, 0],
-                        scale: [0, 1, 1],
-                        rotate: Math.random() * 360,
-                      }}
-                      transition={{ duration: 2, delay: i * 0.06 }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 16 16">
-                        {i % 3 === 0 ? (
-                          <circle
-                            cx="8"
-                            cy="8"
-                            r="6"
-                            fill={
-                              ["#FFD700", "#FF6B9D", "#4CAF50", "#87CEEB"][
-                                i % 4
-                              ]
-                            }
-                          />
-                        ) : i % 3 === 1 ? (
-                          <polygon
-                            points="8,0 10,6 16,6 11,10 13,16 8,12 3,16 5,10 0,6 6,6"
-                            fill={
-                              ["#FFD700", "#FF6B9D", "#4CAF50", "#87CEEB"][
-                                i % 4
-                              ]
-                            }
-                          />
-                        ) : (
-                          <rect
-                            x="2"
-                            y="2"
-                            width="12"
-                            height="12"
-                            rx="2"
-                            fill={
-                              ["#FFD700", "#FF6B9D", "#4CAF50", "#87CEEB"][
-                                i % 4
-                              ]
-                            }
-                          />
-                        )}
-                      </svg>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
+              {
+                // ===== LANJUTAN DARI PART 1 =====
+                // Paste ini setelah code di Part 1
+
+                roundCorrect && (
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    {[...Array(20)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute"
+                        style={{
+                          left: `${10 + Math.random() * 80}%`,
+                          top: -20,
+                        }}
+                        initial={{ y: 0, opacity: 1, scale: 0 }}
+                        animate={{
+                          y: 400,
+                          opacity: [1, 1, 0],
+                          scale: [0, 1, 1],
+                          rotate: Math.random() * 360,
+                        }}
+                        transition={{ duration: 2, delay: i * 0.06 }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 16 16">
+                          {i % 3 === 0 ? (
+                            <circle
+                              cx="8"
+                              cy="8"
+                              r="6"
+                              fill={
+                                ["#FFD700", "#FF6B9D", "#4CAF50", "#87CEEB"][
+                                  i % 4
+                                ]
+                              }
+                            />
+                          ) : i % 3 === 1 ? (
+                            <polygon
+                              points="8,0 10,6 16,6 11,10 13,16 8,12 3,16 5,10 0,6 6,6"
+                              fill={
+                                ["#FFD700", "#FF6B9D", "#4CAF50", "#87CEEB"][
+                                  i % 4
+                                ]
+                              }
+                            />
+                          ) : (
+                            <rect
+                              x="2"
+                              y="2"
+                              width="12"
+                              height="12"
+                              rx="2"
+                              fill={
+                                ["#FFD700", "#FF6B9D", "#4CAF50", "#87CEEB"][
+                                  i % 4
+                                ]
+                              }
+                            />
+                          )}
+                        </svg>
+                      </motion.div>
+                    ))}
+                  </div>
+                )
+              }
 
               <CuteButton variant="primary" size="lg" onClick={handleNextRound}>
                 {currentRound >= config.totalRounds

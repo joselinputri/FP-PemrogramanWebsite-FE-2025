@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { type ReactNode } from "react"; // ✅ FIXED - tambahkan 'type' keyword
 import { cn } from "@/lib/utils";
 
 interface CuteButtonProps {
@@ -48,7 +48,12 @@ export const CuteButton = ({
 
   return (
     <motion.button
-      className={cn(baseClasses, variantClasses[variant], sizeClasses[size], className)}
+      className={cn(
+        baseClasses,
+        variantClasses[variant],
+        sizeClasses[size],
+        className,
+      )}
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
       whileHover={disabled ? {} : { scale: 1.02 }}
@@ -61,7 +66,7 @@ export const CuteButton = ({
         transition={{ duration: 0.5 }}
       />
       {icon && iconPosition === "left" && (
-        <motion.span 
+        <motion.span
           className="flex-shrink-0 relative z-10"
           whileHover={{ rotate: [-5, 5, 0], scale: 1.1 }}
           transition={{ duration: 0.3 }}
@@ -71,7 +76,7 @@ export const CuteButton = ({
       )}
       <span className="relative z-10">{children}</span>
       {icon && iconPosition === "right" && (
-        <motion.span 
+        <motion.span
           className="flex-shrink-0 relative z-10"
           whileHover={{ rotate: [5, -5, 0], scale: 1.1 }}
           transition={{ duration: 0.3 }}

@@ -9,10 +9,14 @@ import { Scoreboard } from "./Scoreboard";
 import { Pendant } from "./Pendant";
 import type { PendantType } from "./Pendant";
 import { DifficultySelect } from "./DifficultySelect";
-import type { Difficulty } from "./DifficultySelect";
 import { MusicControls } from "./MusicControls";
 import { useSoundEffects } from "../../hooks/useSoundEffects";
 import { useBackgroundMusic } from "../../hooks/useBackgroundMusic";
+import { gameApi } from "@/api/watch-and-memorize/gameApi";
+import type {
+  GameSession,
+  LeaderboardEntry as ApiLeaderboardEntry,
+} from "@/api/watch-and-memorize/gameApi";
 import {
   Play,
   ShoppingBag,
@@ -27,7 +31,44 @@ import {
 } from "lucide-react";
 import { ANIMALS } from "../animals/animalData";
 
+// Define Difficulty type locally (fix import error)
+export type Difficulty = "easy" | "medium" | "hard";
+
 type View = "dashboard" | "playing" | "scoreboard" | "intro" | "leaderboard";
+
+interface DifficultyConfig {
+  animalsToWatch: number;
+  memorizationTime: number;
+  totalRounds: number;
+  shuffleSpeed: number;
+  guessTimeLimit: number;
+}
+
+interface GameConfig {
+  id: string;
+  name: string;
+  description: string;
+  thumbnail_image: string;
+  background_music?: string;
+  difficulty_configs: {
+    easy: DifficultyConfig;
+    medium: DifficultyConfig;
+    hard: DifficultyConfig;
+  };
+  available_animals: string[];
+  shop_config: {
+    hint: { price: number; available: boolean };
+    freeze: { price: number; available: boolean };
+    double: { price: number; available: boolean };
+    shield: { price: number; available: boolean };
+    reveal: { price: number; available: boolean };
+  };
+}
+
+interface DashboardProps {
+  onExit?: () => void;
+  gameConfig?: GameConfig; // Optional game config from backend
+}
 
 interface GameState {
   playerName: string;
@@ -59,7 +100,6 @@ const initialGameState: GameState = {
   },
 };
 
-// Dynamic leaderboard - only shows real players who have actually played
 const INITIAL_LEADERBOARD: LeaderboardEntry[] = [];
 
 // Cute custom icons
@@ -126,7 +166,7 @@ const TrophyIcon = ({ size = 32 }: { size?: number }) => (
   </svg>
 );
 
-export const Dashboard = () => {
+export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
   const [view, setView] = useState<View>("dashboard");
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem("watchAndMemorize_gameState");
@@ -140,7 +180,7 @@ export const Dashboard = () => {
   const [showNameInput, setShowNameInput] = useState(false);
   const [tempName, setTempName] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] =
-    useState<Difficulty>("normal");
+    useState<Difficulty>("medium");
   const [countdown, setCountdown] = useState(3);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(() => {
     const saved = localStorage.getItem("watchAndMemorize_leaderboard");
@@ -164,6 +204,47 @@ export const Dashboard = () => {
     toggleMute,
   } = useBackgroundMusic();
 
+  // USE gameConfig untuk override default values
+  const DIFFICULTY_CONFIGS = gameConfig?.difficulty_configs || {
+    easy: {
+      animalsToWatch: 3,
+      memorizationTime: 5,
+      totalRounds: 1,
+      shuffleSpeed: 1000,
+      guessTimeLimit: 30,
+    },
+    medium: {
+      animalsToWatch: 4,
+      memorizationTime: 4,
+      totalRounds: 2,
+      shuffleSpeed: 800,
+      guessTimeLimit: 25,
+    },
+    hard: {
+      animalsToWatch: 5,
+      memorizationTime: 3,
+      totalRounds: 3,
+      shuffleSpeed: 600,
+      guessTimeLimit: 20,
+    },
+  };
+
+  // Available Animals - filter berdasarkan gameConfig
+  const AVAILABLE_ANIMALS = gameConfig?.available_animals
+    ? ANIMALS.filter((animal) =>
+        gameConfig.available_animals.includes(animal.id),
+      )
+    : ANIMALS.slice(0, 8);
+
+  // Shop Config - dari gameConfig atau default
+  const SHOP_CONFIG = gameConfig?.shop_config || {
+    hint: { price: 50, available: true },
+    freeze: { price: 100, available: true },
+    double: { price: 150, available: true },
+    shield: { price: 80, available: true },
+    reveal: { price: 200, available: true },
+  };
+
   // Save game state
   useEffect(() => {
     localStorage.setItem(
@@ -172,7 +253,7 @@ export const Dashboard = () => {
     );
   }, [gameState]);
 
-  // Save leaderboard - filter out any entries without actual player names
+  // Save leaderboard
   useEffect(() => {
     const validLeaderboard = leaderboard.filter(
       (entry) => entry.name && entry.name.trim() !== "",
@@ -183,21 +264,25 @@ export const Dashboard = () => {
     );
   }, [leaderboard]);
 
-  // Handle logout - reset all progress and show name input
+  // Handle logout
   const handleLogout = () => {
     playSound("click");
     setGameState(initialGameState);
-    // DO NOT clear leaderboard - it should persist across users
-    // setLeaderboard([]); // REMOVED - leaderboard stays
     localStorage.removeItem("watchAndMemorize_gameState");
-    // localStorage.removeItem("watchAndMemorize_leaderboard"); // REMOVED - keep leaderboard
     setShowLogoutConfirm(false);
     setTempName("");
-    // Show name input so user can enter new name and pick difficulty before playing
     setShowNameInput(true);
   };
 
-  const handleBuyPendant = (type: PendantType, price: number) => {
+  const handleBuyPendant = (type: PendantType) => {
+    const pendantConfig = SHOP_CONFIG[type];
+
+    if (!pendantConfig.available) {
+      return; // Pendant disabled by admin
+    }
+
+    const price = pendantConfig.price;
+
     if (gameState.coins >= price) {
       playSound("coin");
       setGameState((prev) => ({
@@ -221,7 +306,7 @@ export const Dashboard = () => {
     }));
   };
 
-  const handleGameComplete = (
+  const handleGameComplete = async (
     score: number,
     correct: number,
     total: number,
@@ -237,21 +322,61 @@ export const Dashboard = () => {
       gamesPlayed: prev.gamesPlayed + 1,
     }));
 
-    // Add to leaderboard
     if (gameState.playerName) {
-      const newEntry: LeaderboardEntry = {
-        name: gameState.playerName,
-        score,
-        avatar: Math.floor(Math.random() * 5),
-        date: "Just now",
-        time: timeSpent,
-      };
-      setLeaderboard((prev) => {
-        const updated = [...prev, newEntry]
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 10);
-        return updated;
-      });
+      try {
+        const session: GameSession = {
+          playerName: gameState.playerName,
+          score,
+          correctAnswers: correct,
+          totalQuestions: total,
+          timeSpent,
+          difficulty: selectedDifficulty,
+          coinsEarned,
+        };
+        await gameApi.saveGameSession(session);
+
+        const leaderboardEntry: ApiLeaderboardEntry = {
+          name: gameState.playerName,
+          score,
+          difficulty: selectedDifficulty,
+          timeSpent,
+        };
+        await gameApi.addToLeaderboard(leaderboardEntry);
+
+        const updatedLeaderboard = await gameApi.getLeaderboard(10);
+        setLeaderboard(
+          updatedLeaderboard.map((entry, index) => ({
+            name: entry.name,
+            score: entry.score,
+            avatar: index % 8,
+            date: entry.createdAt
+              ? new Date(entry.createdAt).toLocaleDateString()
+              : "Just now",
+            time: entry.timeSpent,
+          })),
+        );
+
+        console.log("✅ Game data saved to backend");
+      } catch (error) {
+        console.error("❌ Failed to save to backend:", error);
+        const newEntry: LeaderboardEntry = {
+          name: gameState.playerName,
+          score,
+          avatar: Math.floor(Math.random() * 8),
+          date: "Just now",
+          time: timeSpent,
+        };
+        setLeaderboard((prev) => {
+          const updated = [...prev, newEntry]
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 10);
+          localStorage.setItem(
+            "watchAndMemorize_leaderboard",
+            JSON.stringify(updated),
+          );
+          return updated;
+        });
+      }
     }
 
     setView("scoreboard");
@@ -272,12 +397,21 @@ export const Dashboard = () => {
       playSound("pop");
       setGameState((prev) => ({ ...prev, playerName: tempName.trim() }));
       setShowNameInput(false);
-      // Don't start playing immediately - just close the modal and go back to dashboard
-      // User can then click "Play Now" when ready
     }
   };
 
-  // Format time helper
+  const handleExit = async () => {
+    try {
+      await gameApi.incrementPlayCount();
+      console.log("✅ Play count incremented");
+    } catch (error) {
+      console.error("❌ Failed to increment play count:", error);
+    }
+    if (onExit) {
+      onExit();
+    }
+  };
+
   const formatTime = (seconds?: number) => {
     if (!seconds) return "--";
     const mins = Math.floor(seconds / 60);
@@ -285,7 +419,7 @@ export const Dashboard = () => {
     return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
   };
 
-  // Intro animation before game starts - 3 second countdown
+  // Intro animation
   useEffect(() => {
     if (view === "intro") {
       setCountdown(3);
@@ -293,12 +427,10 @@ export const Dashboard = () => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            // Play "GO!" sound effect
             playSound("go");
             setTimeout(() => setView("playing"), 300);
             return 0;
           }
-          // Play countdown beep for 3, 2, 1
           playSound("countdown");
           return prev - 1;
         });
@@ -306,6 +438,83 @@ export const Dashboard = () => {
       return () => clearInterval(timer);
     }
   }, [view, playSound]);
+
+  // Load leaderboard from backend on mount
+  useEffect(() => {
+    const loadLeaderboard = async () => {
+      try {
+        const data = await gameApi.getLeaderboard(10);
+        setLeaderboard(
+          data.map((entry, index) => ({
+            name: entry.name,
+            score: entry.score,
+            avatar: index % 8,
+            date: entry.createdAt
+              ? new Date(entry.createdAt).toLocaleDateString()
+              : "Recently",
+            time: entry.timeSpent,
+          })),
+        );
+        console.log("✅ Leaderboard loaded from backend");
+      } catch (error) {
+        console.error("❌ Failed to load leaderboard:", error);
+        const saved = localStorage.getItem("watchAndMemorize_leaderboard");
+        if (saved) {
+          setLeaderboard(JSON.parse(saved));
+        }
+      }
+    };
+
+    loadLeaderboard();
+  }, []);
+
+  // Load user progress when player name is set
+  useEffect(() => {
+    const loadUserProgress = async () => {
+      if (gameState.playerName) {
+        try {
+          const progress = await gameApi.getUserProgress(gameState.playerName);
+          if (progress) {
+            setGameState((prev) => ({
+              ...prev,
+              coins: progress.coins,
+              highScore: progress.highScore,
+              gamesPlayed: progress.gamesPlayed,
+              pendants: progress.pendants,
+            }));
+            console.log("✅ User progress loaded from backend");
+          }
+        } catch (error) {
+          console.error("❌ Failed to load user progress:", error);
+        }
+      }
+    };
+
+    loadUserProgress();
+  }, [gameState.playerName]);
+
+  // Auto-save user progress (debounced)
+  useEffect(() => {
+    const saveUserProgress = async () => {
+      if (gameState.playerName && gameState.gamesPlayed > 0) {
+        try {
+          await gameApi.saveUserProgress({
+            playerName: gameState.playerName,
+            coins: gameState.coins,
+            highScore: gameState.highScore,
+            gamesPlayed: gameState.gamesPlayed,
+            pendants: gameState.pendants,
+          });
+          console.log("✅ User progress auto-saved");
+        } catch (error) {
+          console.error("❌ Failed to save user progress:", error);
+        }
+      }
+    };
+
+    const timeoutId = setTimeout(saveUserProgress, 2000);
+    return () => clearTimeout(timeoutId);
+  }, [gameState]);
 
   if (view === "intro") {
     return (
@@ -328,7 +537,6 @@ export const Dashboard = () => {
               damping: 18,
             }}
           >
-            {/* Centered flying penguin - smooth professional animation */}
             <motion.div
               className="relative flex items-center justify-center"
               initial={{ y: 40, scale: 0.6, opacity: 0 }}
@@ -340,7 +548,6 @@ export const Dashboard = () => {
                 damping: 15,
               }}
             >
-              {/* Soft glow behind penguin */}
               <motion.div
                 className="absolute inset-0 bg-gradient-radial from-pastel-blue/40 via-pastel-mint/20 to-transparent rounded-full blur-2xl"
                 style={{ width: 200, height: 200, left: -20, top: -20 }}
@@ -367,7 +574,6 @@ export const Dashboard = () => {
               </motion.div>
             </motion.div>
 
-            {/* Sparkles arranged around penguin */}
             {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
@@ -406,7 +612,6 @@ export const Dashboard = () => {
               Watch carefully, {gameState.playerName}!
             </motion.p>
 
-            {/* Countdown number - centered and prominent */}
             <motion.div
               className="mt-8"
               key={countdown}
@@ -433,12 +638,13 @@ export const Dashboard = () => {
   if (view === "playing") {
     return (
       <GamePlay
-        onExit={() => setView("dashboard")}
+        onExit={handleExit}
         playerName={gameState.playerName}
         pendants={gameState.pendants}
         onUsePendant={handleUsePendant}
         onGameComplete={handleGameComplete}
-        difficulty={selectedDifficulty}
+        availableAnimals={AVAILABLE_ANIMALS}
+        difficultyConfig={DIFFICULTY_CONFIGS[selectedDifficulty]}
       />
     );
   }
@@ -537,7 +743,7 @@ export const Dashboard = () => {
                       const AnimalComponent =
                         ANIMALS[entry.avatar % ANIMALS.length].component;
                       return <AnimalComponent size={32} />;
-                    })()}{" "}
+                    })()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-body text-sm text-foreground font-medium truncate">
@@ -611,7 +817,6 @@ export const Dashboard = () => {
               whileHover={{ rotate: [0, -5, 5, 0] }}
               transition={{ duration: 0.4 }}
             >
-              {/* Mini penguin avatar */}
               <Penguin size={32} />
             </motion.div>
             <div>
@@ -635,6 +840,8 @@ export const Dashboard = () => {
                 className="ml-1 p-1.5 rounded-full bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
+                  // PART 2 - Continue from Part 1
+
                   setShowLogoutConfirm(true);
                 }}
                 whileHover={{ scale: 1.1, rotate: 10 }}
@@ -681,7 +888,7 @@ export const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* Title with decorations - gentle sparkles not stars */}
+        {/* Title */}
         <motion.div
           className="text-center mb-6"
           initial={{ scale: 0.8, opacity: 0 }}
@@ -710,7 +917,7 @@ export const Dashboard = () => {
           </p>
         </motion.div>
 
-        {/* Mascot penguin - centered and larger */}
+        {/* Mascot penguin */}
         <motion.div
           className="relative mb-6"
           initial={{ y: 50, opacity: 0 }}
@@ -731,7 +938,6 @@ export const Dashboard = () => {
             <Penguin size={160} isFlying />
           </motion.div>
 
-          {/* Speech bubble */}
           <motion.div
             className="absolute -top-2 -right-4 bg-cloud rounded-2xl px-4 py-2 border-2 border-border/50 shadow-md"
             initial={{ scale: 0 }}
@@ -743,7 +949,7 @@ export const Dashboard = () => {
           </motion.div>
         </motion.div>
 
-        {/* High score display - COMPACT & ELEGANT */}
+        {/* High score display */}
         <motion.div
           className="relative bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 backdrop-blur-sm rounded-2xl px-6 py-4 border-3 border-warning/30 shadow-lg mb-5 overflow-hidden"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -823,7 +1029,6 @@ export const Dashboard = () => {
               HOW TO
             </CuteButton>
 
-            {/* Scoreboard button - opens full leaderboard modal */}
             <CuteButton
               variant="accent"
               size="md"
@@ -838,9 +1043,8 @@ export const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* Leaderboard - Right side (visible on lg) and below on mobile */}
+        {/* Leaderboard sidebar */}
         <motion.div
-          id="leaderboard-section"
           className="absolute top-20 right-4 w-64 hidden lg:block"
           initial={{ x: 100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -882,7 +1086,7 @@ export const Dashboard = () => {
                     {(() => {
                       const AnimalComponent = ANIMALS[0].component;
                       return <AnimalComponent size={45} isHappy={true} />;
-                    })()}{" "}
+                    })()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-body text-xs text-foreground truncate">
@@ -914,7 +1118,7 @@ export const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* Owned pendants display - smaller */}
+        {/* Pendants display */}
         <motion.div
           className="absolute bottom-4 left-4 right-4"
           initial={{ y: 50, opacity: 0 }}
@@ -940,7 +1144,7 @@ export const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* Decorative animals - animated */}
+        {/* Decorative animals */}
         <motion.div
           className="absolute bottom-28 left-8"
           animate={{ y: [0, -8, 0] }}
@@ -959,9 +1163,11 @@ export const Dashboard = () => {
           {(() => {
             const AnimalComponent = ANIMALS[2].component;
             return <AnimalComponent size={45} isHappy={true} />;
-          })()}{" "}
+          })()}
         </motion.div>
       </div>
+
+      {/* MODALS */}
 
       {/* Shop modal */}
       <AnimatePresence>
@@ -972,6 +1178,7 @@ export const Dashboard = () => {
             coins={gameState.coins}
             pendants={gameState.pendants}
             onBuyPendant={handleBuyPendant}
+            shopConfig={SHOP_CONFIG}
           />
         )}
       </AnimatePresence>
@@ -1043,7 +1250,7 @@ export const Dashboard = () => {
         )}
       </AnimatePresence>
 
-      {/* Play popup with difficulty */}
+      {/* Play popup */}
       <AnimatePresence>
         {showPlayPopup && (
           <motion.div
@@ -1060,7 +1267,6 @@ export const Dashboard = () => {
               exit={{ scale: 0.8, y: 30 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Centered penguin */}
               <motion.div
                 className="flex justify-center"
                 animate={{ y: [-5, 5, -5], rotate: [-3, 3, -3] }}
@@ -1077,14 +1283,13 @@ export const Dashboard = () => {
                 correct order!
               </p>
 
-              {/* Difficulty selector */}
               <div className="mb-6">
                 <p className="font-pixel text-[10px] text-muted-foreground mb-2">
                   SELECT DIFFICULTY
                 </p>
                 <DifficultySelect
                   selected={selectedDifficulty}
-                  onSelect={(d) => {
+                  onSelect={(d: Difficulty) => {
                     playSound("click");
                     setSelectedDifficulty(d);
                   }}
@@ -1210,7 +1415,7 @@ export const Dashboard = () => {
         )}
       </AnimatePresence>
 
-      {/* Logout confirmation modal */}
+      {/* Logout confirmation */}
       <AnimatePresence>
         {showLogoutConfirm && (
           <motion.div
