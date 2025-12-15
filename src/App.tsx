@@ -9,6 +9,7 @@ import ProfilePage from "./pages/ProfilePage";
 import Quiz from "./pages/Quiz";
 import Register from "./pages/Register";
 import Sandbox from "./pages/Sandbox";
+
 import CreateSpeedSorting from "./pages/speed-sorting/CreateSpeedSorting";
 import EditSpeedSorting from "./pages/speed-sorting/EditSpeedSorting";
 import SpeedSorting from "./pages/speed-sorting/SpeedSorting";
@@ -16,12 +17,12 @@ import ProtectedRoute from "./routes/ProtectedRoutes";
 import CreateAnagram from "./pages/Anagram/CreateAnagram";
 import PlayAnagram from "./pages/Anagram/PlayAnagram";
 import EditAnagram from "./pages/Anagram/EditAnagram";
-// Fix typo case sensitivity
-
-// 📌 TAMBAHAN 1: Import Komponen Game Pair or No Pair
 import PairOrNoPairGame from "./pages/pair-or-no-pair";
 import CreatePairOrNoPair from "./pages/pair-or-no-pair/create";
-import WatchMemorize from "./pages/Index";
+
+import WatchMemorize from "./pages/watch-and-memorize/PlayWatchAndMemorize"; 
+import CreateWatchMemorize from "./pages/watch-and-memorize/CreateGame";
+import EditWatchMemorize from "./pages/watch-and-memorize/EditGame"; 
 
 function App() {
   return (
@@ -34,32 +35,23 @@ function App() {
         <Route path="/quiz/play/:id" element={<Quiz />} />
         <Route path="/speed-sorting/play/:id" element={<SpeedSorting />} />
         <Route path="/anagram/play/:id" element={<PlayAnagram />} />
-        <Route
-          path="/pair-or-no-pair/play/:gameId"
-          element={<PairOrNoPairGame />}
-        />
-        <Route path="/watch-memorize/play/:id" element={<WatchMemorize />} />
+        <Route path="/pair-or-no-pair/play/:gameId" element={<PairOrNoPairGame />} />
+        <Route path="/watch-and-memorize/play/:id" element={<WatchMemorize />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/my-projects" element={<MyProjectsPage />} />
           <Route path="/create-projects" element={<CreateProject />} />
           <Route path="/create-quiz" element={<CreateQuiz />} />
-          <Route
-            path="/create-speed-sorting"
-            element={<CreateSpeedSorting />}
-          />
-          <Route
-            path="/create-pair-or-no-pair"
-            element={<CreatePairOrNoPair />}
-          />
-          <Route path="/quiz/edit/:id" element={<EditQuiz />} />
-          <Route
-            path="/speed-sorting/edit/:id"
-            element={<EditSpeedSorting />}
-          />
+          <Route path="/create-speed-sorting" element={<CreateSpeedSorting />} />
+          <Route path="/create-pair-or-no-pair" element={<CreatePairOrNoPair />} />
           <Route path="/create-anagram" element={<CreateAnagram />} />
+          <Route path="/create-watch-and-memorize" element={<CreateWatchMemorize />} />
+          
+          <Route path="/quiz/edit/:id" element={<EditQuiz />} />
+          <Route path="/speed-sorting/edit/:id" element={<EditSpeedSorting />} />
           <Route path="/anagram/edit/:id" element={<EditAnagram />} />
+          <Route path="/watch-and-memorize/edit/:id" element={<EditWatchMemorize />} />
         </Route>
       </Routes>
     </>

@@ -68,6 +68,13 @@ interface GameConfig {
 interface DashboardProps {
   onExit?: () => void;
   gameConfig?: GameConfig; // Optional game config from backend
+  onGameComplete: (
+    score: number,
+    correctAnswers: number,
+    totalQuestions: number,
+    timeSpent: number,
+    coinsEarned: number
+  ) => void;
 }
 
 interface GameState {

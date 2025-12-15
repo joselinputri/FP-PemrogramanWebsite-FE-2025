@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Dashboard } from "@/pages/watch-and-memorize/components/game/Dashboard";
+// import { Dashboard } from "@/pages/watch-and-memorize/components/game/Dashboard";
 import { GameBackground } from "@/pages/watch-and-memorize/components/game/GameBackground";
 import { Penguin } from "@/pages/watch-and-memorize/components/animals/Penguin";
 import { Sparkles } from "lucide-react";
@@ -208,7 +208,7 @@ const Index = () => {
     );
   }
 
-  return <Dashboard />;
+  // return <Dashboard />;
 };
 
 export default Index;

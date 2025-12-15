@@ -1,4 +1,3 @@
-// src/pages/watch-and-memorize/admin/CreateGame.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -63,7 +62,7 @@ function CreateWatchAndMemorize() {
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [backgroundMusic, setBackgroundMusic] = useState<File | null>(null);
 
-  // Difficulty Configs
+  // Difficulty Configs - akan disimpan di game_json
   const [difficultyConfigs, setDifficultyConfigs] = useState<
     Record<string, DifficultyConfig>
   >({
@@ -90,12 +89,12 @@ function CreateWatchAndMemorize() {
     },
   });
 
-  // Available Animals
+  // Available Animals - akan disimpan di game_json
   const [selectedAnimals, setSelectedAnimals] = useState<string[]>(
     ANIMALS.slice(0, 8).map((a) => a.id),
   );
 
-  // Shop Config
+  // Shop Config - akan disimpan di game_json
   const [shopConfig, setShopConfig] = useState<
     Record<PendantType, ShopItemConfig>
   >({
@@ -154,36 +153,75 @@ function CreateWatchAndMemorize() {
     });
   };
 
+  // Helper function to convert File to base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleSubmit = async (publish = false) => {
+    // Validasi
     if (!thumbnail) return toast.error("Thumbnail is required");
     if (!title.trim()) return toast.error("Game title is required");
     if (selectedAnimals.length < 3) {
       return toast.error("Please select at least 3 animals");
     }
 
-    const formData = new FormData();
-    formData.append("name", title);
-    formData.append("description", description);
-    formData.append("thumbnail_image", thumbnail);
-    formData.append("is_publish_immediately", String(publish));
-
-    if (backgroundMusic) {
-      formData.append("background_music", backgroundMusic);
-    }
-
-    formData.append("difficulty_configs", JSON.stringify(difficultyConfigs));
-    formData.append("available_animals", JSON.stringify(selectedAnimals));
-    formData.append("shop_config", JSON.stringify(shopConfig));
-
     try {
-      await api.post("/api/game/game-type/watch-and-memorize", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // Convert files to base64
+      const thumbnailBase64 = await fileToBase64(thumbnail);
+      const musicBase64 = backgroundMusic
+        ? await fileToBase64(backgroundMusic)
+        : undefined;
+
+      // Prepare game_json sesuai dengan struktur backend
+      const gameJson = {
+        difficulty_configs: difficultyConfigs,
+        available_animals: selectedAnimals,
+        shop_config: shopConfig,
+        background_music: musicBase64, // Optional
+      };
+
+      // Prepare payload sesuai dengan Prisma schema
+      const payload = {
+        name: title,
+        description: description || undefined,
+        thumbnail_image: thumbnailBase64,
+        is_publish_immediately: publish,
+        game_json: gameJson, // JSON field di Prisma
+      };
+
+      console.log("Submitting payload:", payload);
+
+      // POST to backend
+      const response = await api.post(
+        "/api/game/game-type/watch-and-memorize",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Response:", response.data);
       toast.success("Game created successfully!");
       navigate("/my-projects");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to create game:", err);
-      toast.error("Failed to create game. Please try again.");
+      
+      // Better error handling
+      const errorMessage = err.response?.data?.message || "Failed to create game";
+      toast.error(errorMessage);
+      
+      // Log detailed error for debugging
+      if (err.response?.data) {
+        console.error("Error details:", err.response.data);
+      }
     }
   };
 

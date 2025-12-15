@@ -1,7 +1,8 @@
 // src/pages/watch-and-memorize/PlayWatchAndMemorize.tsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Dashboard } from "./components/game/Dashboard";
+import { Dashboard } from "@/pages/watch-and-memorize/components/game/Dashboard";
+import { useSubmitResult } from "../../api/watch-and-memorize/useSubmitResult";
 
 interface DifficultyConfig {
   animalsToWatch: number;
@@ -26,12 +27,12 @@ interface GameConfig {
   thumbnail_image: string;
   background_music?: string;
   difficulty_configs: {
-    easy: DifficultyConfig; // ✅ Fix
-    medium: DifficultyConfig; // ✅ Fix
-    hard: DifficultyConfig; // ✅ Fix
+    easy: DifficultyConfig;
+    medium: DifficultyConfig;
+    hard: DifficultyConfig;
   };
   available_animals: string[];
-  shop_config: ShopConfig; // ✅ Fix
+  shop_config: ShopConfig;
 }
 
 const PlayWatchAndMemorize = () => {
@@ -44,6 +45,9 @@ const PlayWatchAndMemorize = () => {
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // ⭐ Submit result mutation
+  const { mutate: submitResult, isPending: isSubmitting } = useSubmitResult(gameId || '');
+
   // Load game config dari backend
   useEffect(() => {
     const loadGameConfig = async () => {
@@ -55,7 +59,7 @@ const PlayWatchAndMemorize = () => {
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/game/game-type/watch-and-memorize/${gameId}/play/public`,
+          `${import.meta.env.VITE_API_URL}/api/game/game-type/watch-and-memorize/${gameId}/play`,
         );
 
         if (!response.ok) {
@@ -64,13 +68,6 @@ const PlayWatchAndMemorize = () => {
 
         const result = await response.json();
         setGameConfig(result.data);
-
-        // Update play count
-        await fetch(`${import.meta.env.VITE_API_URL}/api/game/play-count`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ game_id: gameId }),
-        });
 
         console.log("✅ Game config loaded:", result.data);
         setStage("intro");
@@ -91,6 +88,49 @@ const PlayWatchAndMemorize = () => {
   const handleStartGame = () => {
     setStage("playing");
   };
+
+  // ⭐ Handle game complete - submit to backend
+  const handleGameComplete = useCallback(
+    (
+      score: number,
+      correctAnswers: number,
+      totalQuestions: number,
+      timeSpent: number,
+      coinsEarned: number, // ⭐ NEW parameter
+    ) => {
+      console.log("🎮 Game Complete:", { 
+        score, 
+        correctAnswers, 
+        totalQuestions, 
+        timeSpent, 
+        coinsEarned 
+      });
+
+      // Submit result to backend
+      submitResult(
+        {
+          score,
+          correctAnswers,
+          totalQuestions,
+          timeSpent,
+          coinsEarned, // ⭐ Send coins to backend
+        },
+        {
+          onSuccess: (data) => {
+            console.log("✅ Result submitted:", data);
+            // Navigate to result page or show modal
+            // navigate(`/watch-and-memorize/${gameId}/result`, { 
+            //   state: { score, correctAnswers, coinsEarned } 
+            // });
+          },
+          onError: (error) => {
+            console.error("❌ Failed to submit result:", error);
+          },
+        }
+      );
+    },
+    [gameId, submitResult],
+  );
 
   // Loading Screen
   if (stage === "loading") {
@@ -119,10 +159,8 @@ const PlayWatchAndMemorize = () => {
           backgroundPosition: "center",
         }}
       >
-        {/* Overlay */}
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
 
-        {/* Content */}
         <div className="relative z-10 text-center max-w-2xl px-6">
           {error ? (
             <div className="bg-red-500/90 backdrop-blur-md rounded-3xl p-8 mb-6">
@@ -139,7 +177,6 @@ const PlayWatchAndMemorize = () => {
                   "Test your memory with cute animals!"}
               </p>
 
-              {/* Game Info */}
               <div className="flex justify-center gap-4 mb-6 flex-wrap">
                 <div className="bg-green-100 px-4 py-2 rounded-full">
                   <span className="text-green-700 font-bold">🟢 Easy</span>
@@ -154,15 +191,15 @@ const PlayWatchAndMemorize = () => {
             </div>
           )}
 
-          {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {!error && (
               <button
                 onClick={handleStartGame}
-                className="group relative px-12 py-5 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl hover:scale-110 transition-all duration-300 shadow-[0_0_40px_rgba(59,130,246,0.5)] hover:shadow-[0_0_60px_rgba(59,130,246,0.8)]"
+                disabled={isSubmitting}
+                className="group relative px-12 py-5 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl hover:scale-110 transition-all duration-300 shadow-[0_0_40px_rgba(59,130,246,0.5)] hover:shadow-[0_0_60px_rgba(59,130,246,0.8)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="text-white font-black text-2xl tracking-wider">
-                  START GAME
+                  {isSubmitting ? "SUBMITTING..." : "START GAME"}
                 </span>
               </button>
             )}
@@ -177,7 +214,6 @@ const PlayWatchAndMemorize = () => {
             </button>
           </div>
 
-          {/* Instructions */}
           {!error && (
             <div className="mt-8 bg-black/60 backdrop-blur-md rounded-2xl p-6 text-white">
               <h3 className="font-bold text-xl mb-3">📖 How to Play:</h3>
@@ -197,10 +233,15 @@ const PlayWatchAndMemorize = () => {
 
   // Playing Stage - Render Dashboard dengan game config
   if (stage === "playing" && gameConfig) {
-    return <Dashboard onExit={handleExit} gameConfig={gameConfig} />;
+    return (
+      <Dashboard 
+        onExit={handleExit} 
+        gameConfig={gameConfig} 
+        onGameComplete={handleGameComplete} 
+      />
+    );
   }
 
-  // Fallback
   return null;
 };
 
