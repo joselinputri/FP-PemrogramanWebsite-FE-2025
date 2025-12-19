@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import api from '@/api/axios';
 import { toast } from '../../pages/watch-and-memorize/hooks/use-toast';
 
@@ -12,34 +12,43 @@ interface PurchaseResponse {
 }
 
 export const usePurchasePendant = () => {
-  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  return useMutation({
-    mutationFn: async (pendantId: string) => {
+  const purchasePendant = async (pendantId: string, onSuccess?: () => void) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
       const { data } = await api.post<{ data: PurchaseResponse }>(
         '/game/game-type/watch-and-memorize/pendant/purchase',
         { pendantId }
       );
-      return data.data;
-    },
-    onSuccess: (data) => {
-      // Invalidate queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ['coins'] });
-      queryClient.invalidateQueries({ queryKey: ['owned-pendants'] });
 
       toast({
         title: 'Purchase Successful! 🎉',
-        description: data.message,
+        description: data.data.message,
       });
-    },
-    onError: (error: any) => {
-      const errorMessage = error.response?.data?.message || 'Insufficient coins or error occurred';
+
+      // Call refetch functions if provided
+      if (onSuccess) onSuccess();
+
+      return data.data;
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Insufficient coins or error occurred';
       
       toast({
         title: 'Purchase Failed',
         description: errorMessage,
         variant: 'destructive',
       });
-    },
-  });
+      
+      setError(err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { purchasePendant, isLoading, error };
 };

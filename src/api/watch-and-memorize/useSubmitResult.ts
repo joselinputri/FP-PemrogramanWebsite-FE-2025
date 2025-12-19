@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import api from '../axios';
 
 interface SubmitResultPayload {
@@ -6,7 +6,7 @@ interface SubmitResultPayload {
   correctAnswers: number;
   totalQuestions: number;
   timeSpent: number;
-  coinsEarned: number; 
+  coinsEarned: number;
 }
 
 interface SubmitResultResponse {
@@ -21,19 +21,30 @@ interface SubmitResultResponse {
 }
 
 export const useSubmitResult = (gameId: string) => {
-  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  return useMutation({
-    mutationFn: async (payload: SubmitResultPayload) => {
+  const submitResult = async (payload: SubmitResultPayload, onSuccess?: () => void) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
       const { data } = await api.post<{ data: SubmitResultResponse }>(
-        `/game/game-type/watch-and-memorize/${gameId}/submit`,
+        `api/game/game-type/watch-and-memorize/${gameId}/submit`,
         payload
       );
+
+      // Call refetch functions if provided
+      if (onSuccess) onSuccess();
+
       return data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leaderboard', gameId] });
-      queryClient.invalidateQueries({ queryKey: ['coins'] });
-    },
-  });
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { submitResult, isLoading, error };
 };

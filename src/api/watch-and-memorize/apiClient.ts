@@ -1,13 +1,14 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export class ApiError extends Error {
-  constructor(
-    message: string,
-    public status?: number,
-    public data?: unknown,
-  ) {
+  status?: number;
+  data?: unknown;
+
+  constructor(message: string, status?: number, data?: unknown) {
     super(message);
     this.name = "ApiError";
+    this.status = status;
+    this.data = data;
   }
 }
 
@@ -25,11 +26,20 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return response.json();
 }
 
+// ✅ Helper untuk get auth token
+function getAuthHeaders(): HeadersInit {
+  const token = localStorage.getItem('token'); // Sesuaikan dengan storage kamu
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` }),
+  };
+}
+
 export const apiClient = {
   async get<T>(endpoint: string): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
     });
     return handleResponse<T>(response);
   },
@@ -37,7 +47,7 @@ export const apiClient = {
   async post<T>(endpoint: string, data: unknown): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
     return handleResponse<T>(response);
@@ -46,7 +56,7 @@ export const apiClient = {
   async put<T>(endpoint: string, data: unknown): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
     return handleResponse<T>(response);
@@ -55,7 +65,7 @@ export const apiClient = {
   async delete<T>(endpoint: string): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
     });
     return handleResponse<T>(response);
   },

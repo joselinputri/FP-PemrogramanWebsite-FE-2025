@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import api from '@/api/axios';
 
 export interface Pendant {
@@ -10,14 +10,28 @@ export interface Pendant {
 }
 
 export const useGetPendantShop = () => {
-  return useQuery({
-    queryKey: ['pendant-shop'],
-    queryFn: async () => {
-      const { data } = await api.get<{ data: Pendant[] }>(
-        '/game/game-type/watch-and-memorize/pendant/shop'
-      );
-      return data.data;
-    },
-    staleTime: 60000, // 1 minute
-  });
+  const [data, setData] = useState<Pendant[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const fetchShop = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get<{ data: Pendant[] }>(
+          '/game/game-type/watch-and-memorize/pendant/shop'
+        );
+        setData(response.data.data);
+        setError(null);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchShop();
+  }, []);
+
+  return { data, isLoading, error };
 };

@@ -1,4 +1,13 @@
 import { motion } from "framer-motion";
+import { Flame, Target, Zap } from "lucide-react";
+import React from "react";
+
+export type Difficulty = "easy" | "medium" | "hard";
+
+interface DifficultySelectProps {
+  selected: Difficulty;
+  onSelect: (difficulty: Difficulty) => void;
+}
 
 export const DifficultySelect = ({
   selected,
@@ -19,8 +28,8 @@ export const DifficultySelect = ({
       description: "3 animals, 1 round",
     },
     {
-      id: "normal",
-      label: "NORMAL",
+      id: "medium",
+      label: "MEDIUM",
       icon: <Target size={18} />,
       color: "from-pastel-blue to-secondary/60",
       description: "4 animals, balanced",

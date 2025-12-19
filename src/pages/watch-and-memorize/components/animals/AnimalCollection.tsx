@@ -8,6 +8,14 @@ export interface AnimalProps {
   className?: string;
 }
 
+export function safePath(d: string | undefined) {
+  if (!d || typeof d !== "string") {
+    console.warn("⚠️ Invalid SVG path data:", d);
+    return "M0 0"; 
+  }
+  return d;
+}
+
 // Cute Penguin - soft pastel colors with bigger eyes
 export const CardPenguin = ({
   size = 80,
@@ -116,19 +124,19 @@ export const CardPenguin = ({
         <circle cx="35" cy="32" r="2" fill="#FFF" />
         <circle cx="47" cy="32" r="2" fill="#FFF" />
         <path
-          d="M28 28 Q34 32 40 28"
+          d={safePath("M28 28 Q34 32 40 28")}
           stroke="#4A4A4A"
           strokeWidth="1.5"
           fill="none"
         />
         <path
-          d="M40 28 Q46 32 52 28"
+          d={safePath("M40 28 Q46 32 52 28")}
           stroke="#4A4A4A"
           strokeWidth="1.5"
           fill="none"
         />
         <motion.path
-          d="M50 42 Q52 48 50 52"
+          d={safePath("M50 42 Q52 48 50 52")}
           stroke="#87CEEB"
           strokeWidth="3"
           fill="none"
@@ -140,14 +148,14 @@ export const CardPenguin = ({
     ) : isHappy ? (
       <>
         <path
-          d="M30 35 Q34 28 38 35"
+          d={safePath("M30 35 Q34 28 38 35")}
           stroke="#4A4A4A"
           strokeWidth="3"
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M42 35 Q46 28 50 35"
+          d={safePath("M42 35 Q46 28 50 35")}
           stroke="#4A4A4A"
           strokeWidth="3"
           fill="none"
@@ -256,7 +264,7 @@ export const Cow = ({
       style={{ transformOrigin: "62px 55px" }}
     >
       <path
-        d="M58 52 Q68 50 66 42"
+        d={safePath("M58 52 Q68 50 66 42")}
         stroke="#8A8A8A"
         strokeWidth="4"
         fill="none"
@@ -278,7 +286,7 @@ export const Cow = ({
 
     {/* Pastel spots - heart and circles */}
     <path
-      d="M48 48 C52 44 56 48 52 54 C50 58 48 58 46 54 C42 48 44 44 48 48"
+      d={safePath("M48 48 C52 44 56 48 52 54 C50 58 48 58 46 54 C42 48 44 44 48 48")}
       fill="#D5C6E0"
     />
     <ellipse cx="32" cy="58" rx="6" ry="5" fill="#D5C6E0" />
@@ -416,19 +424,19 @@ export const Cow = ({
         <circle cx="34" cy="30" r="2.5" fill="#FFF" />
         <circle cx="50" cy="30" r="2.5" fill="#FFF" />
         <path
-          d="M26 26 Q32 30 38 26"
+          d={safePath("M26 26 Q32 30 38 26")}
           stroke="#4A4A4A"
           strokeWidth="1.5"
           fill="none"
         />
         <path
-          d="M42 26 Q48 30 54 26"
+          d={safePath("M42 26 Q48 30 54 26")}
           stroke="#4A4A4A"
           strokeWidth="1.5"
           fill="none"
         />
         <motion.path
-          d="M52 38 Q54 44 52 48"
+          d={safePath("M52 38 Q54 44 52 48")}
           stroke="#87CEEB"
           strokeWidth="3"
           fill="none"
@@ -440,14 +448,14 @@ export const Cow = ({
     ) : isHappy ? (
       <>
         <path
-          d="M27 33 Q32 26 37 33"
+          d={safePath("M27 33 Q32 26 37 33")}
           stroke="#4A4A4A"
           strokeWidth="3"
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M43 33 Q48 26 53 33"
+          d={safePath("M43 33 Q48 26 53 33")}
           stroke="#4A4A4A"
           strokeWidth="3"
           fill="none"
@@ -489,7 +497,7 @@ export const Cow = ({
 
     {/* Smile */}
     <path
-      d={isSad ? "M34 52 Q40 48 46 52" : "M34 50 Q40 55 46 50"}
+      d={safePath(isSad ? "M34 52 Q40 48 46 52" : "M34 50 Q40 55 46 50")}
       stroke="#4A4A4A"
       strokeWidth="2"
       fill="none"
@@ -620,27 +628,27 @@ export const Fox = ({
     <g>
       {/* Left ear */}
       <path
-        d="M33 27 L27 9 L39 22 Z"
+        d={safePath("M33 27 L27 9 L39 22 Z")}
         fill="#CC6549"
         stroke="#A8402E"
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
-      <path d="M34.5 24 L30 14 L38 21.5 Z" fill="#FFB6C1" opacity="0.7" />
+      <path d={safePath("M34.5 24 L30 14 L38 21.5 Z")} fill="#FFB6C1" opacity="0.7" />
 
       {/* Right ear */}
       <path
-        d="M67 27 L73 9 L61 22 Z"
+        d={safePath("M67 27 L73 9 L61 22 Z")}
         fill="#CC6549"
         stroke="#A8402E"
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
-      <path d="M65.5 24 L70 14 L62 21.5 Z" fill="#FFB6C1" opacity="0.7" />
+      <path d={safePath("M65.5 24 L70 14 L62 21.5 Z")} fill="#FFB6C1" opacity="0.7" />
     </g>
 
     {/* White face markings */}
-    <path d="M50 30 L37 47 Q43 51 50 51 Q57 51 63 47 L50 30 Z" fill="#FFFBF5" />
+    <path d={safePath("M50 30 L37 47 Q43 51 50 51 Q57 51 63 47 L50 30 Z")} fill="#FFFBF5" />
     <ellipse cx="50" cy="42" rx="14.5" ry="10.5" fill="#FFF" opacity="0.85" />
 
     {/* Rosy cheeks - symmetric */}
@@ -665,14 +673,14 @@ export const Fox = ({
         <circle cx="58.5" cy="37" r="1" fill="#FFF" opacity="0.5" />
         {/* Sad eyebrows */}
         <path
-          d="M36 30 Q41 33 46 30"
+          d={safePath("M36 30 Q41 33 46 30")}
           stroke="#2D2D2D"
           strokeWidth="1.8"
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M54 30 Q59 33 64 30"
+          d={safePath("M54 30 Q59 33 64 30")}
           stroke="#2D2D2D"
           strokeWidth="1.8"
           fill="none"
@@ -680,7 +688,7 @@ export const Fox = ({
         />
         {/* Tear */}
         <motion.path
-          d="M62 42 Q63.5 48 62 52"
+          d={safePath("M62 42 Q63.5 48 62 52")}
           stroke="#87CEEB"
           strokeWidth="3"
           fill="none"
@@ -692,14 +700,14 @@ export const Fox = ({
     ) : isHappy ? (
       <>
         <path
-          d="M36 37 Q41 30 46 37"
+          d={safePath("M36 37 Q41 30 46 37")}
           stroke="#2D2D2D"
           strokeWidth="3"
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M54 37 Q59 30 64 37"
+          d={safePath("M54 37 Q59 30 64 37")}
           stroke="#2D2D2D"
           strokeWidth="3"
           fill="none"
@@ -744,14 +752,14 @@ export const Fox = ({
 
     {/* Mulut fox - bentuk 3 kecil */}
     <path
-      d="M50 47 Q47 48.5 45 50"
+      d={safePath("M50 47 Q47 48.5 45 50")}
       stroke="#2D2D2D"
       strokeWidth="1.8"
       fill="none"
       strokeLinecap="round"
     />
     <path
-      d="M50 47 Q53 48.5 55 50"
+      d={safePath("M50 47 Q53 48.5 55 50")}
       stroke="#2D2D2D"
       strokeWidth="1.8"
       fill="none"
@@ -836,7 +844,7 @@ export const Fox = ({
             transition={{ duration: 2, repeat: Infinity, delay: i * 0.42 }}
           >
             <path
-              d="M50 20 C50 18.2 48.2 17.2 47.2 18 C46.2 18.8 46.2 20 47.2 21 L50 23 L52.8 21 C53.8 20 53.8 18.8 52.8 18 C51.8 17.2 50 18.2 50 20"
+              d={safePath("M50 20 C50 18.2 48.2 17.2 47.2 18 C46.2 18.8 46.2 20 47.2 21 L50 23 L52.8 21 C53.8 20 53.8 18.8 52.8 18 C51.8 17.2 50 18.2 50 20")}
               fill="#FF9AA2"
               transform={`translate(${i * 8 - 8}, ${i * 3})`}
             />
@@ -968,14 +976,14 @@ export const Bear = ({
         <circle cx="48.5" cy="32" r="1" fill="#FFF" opacity="0.5" />
         {/* Sad eyebrows */}
         <path
-          d="M26 26 Q31 29 36 26"
+          d={safePath("M26 26 Q31 29 36 26")}
           stroke="#8B6F47"
           strokeWidth="1.8"
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M44 26 Q49 29 54 26"
+          d={safePath("M44 26 Q49 29 54 26")}
           stroke="#8B6F47"
           strokeWidth="1.8"
           fill="none"
@@ -983,7 +991,7 @@ export const Bear = ({
         />
         {/* Tear */}
         <motion.path
-          d="M53 37 Q54 43 53 47"
+          d={safePath("M53 37 Q54 43 53 47")}
           stroke="#87CEEB"
           strokeWidth="3"
           fill="none"
@@ -995,14 +1003,14 @@ export const Bear = ({
     ) : isHappy ? (
       <>
         <path
-          d="M26 32 Q31 25 36 32"
+          d={safePath("M26 32 Q31 25 36 32")}
           stroke="#2D2D2D"
           strokeWidth="3"
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M44 32 Q49 25 54 32"
+          d={safePath("M44 32 Q49 25 54 32")}
           stroke="#2D2D2D"
           strokeWidth="3"
           fill="none"
@@ -1047,14 +1055,14 @@ export const Bear = ({
 
     {/* Mulut - bentuk 3 kecil dan pendek */}
     <path
-      d="M40 46 Q38 47 36.5 48"
+      d={safePath("M40 46 Q38 47 36.5 48")}
       stroke="#2D2D2D"
       strokeWidth="1.8"
       fill="none"
       strokeLinecap="round"
     />
     <path
-      d="M40 46 Q42 47 43.5 48"
+      d={safePath("M40 46 Q42 47 43.5 48")}
       stroke="#2D2D2D"
       strokeWidth="1.8"
       fill="none"
@@ -1129,7 +1137,7 @@ export const Bear = ({
             transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
           >
             <path
-              d="M40 16 C40 14.2 38.2 13.2 37.2 14 C36.2 14.8 36.2 16 37.2 17 L40 19 L42.8 17 C43.8 16 43.8 14.8 42.8 14 C41.8 13.2 40 14.2 40 16"
+              d={safePath("M40 16 C40 14.2 38.2 13.2 37.2 14 C36.2 14.8 36.2 16 37.2 17 L40 19 L42.8 17 C43.8 16 43.8 14.8 42.8 14 C41.8 13.2 40 14.2 40 16")}
               fill="#FF69B4"
               transform={`translate(${i * 9 - 9}, ${i * 3.5})`}
             />
@@ -1173,14 +1181,14 @@ export const Dog = ({
       style={{ transformOrigin: "55px 56px" }}
     >
       <path
-        d="M56 54 Q65 48 68 42 Q70 38 68 34"
+        d={safePath("M56 54 Q65 48 68 42 Q70 38 68 34")}
         stroke="#E8B87C"
         strokeWidth="10"
         fill="none"
         strokeLinecap="round"
       />
       <path
-        d="M56 54 Q65 48 68 42 Q70 38 68 34"
+        d={safePath("M56 54 Q65 48 68 42 Q70 38 68 34")}
         stroke="#FFF8E7"
         strokeWidth="6"
         fill="none"
@@ -1224,24 +1232,24 @@ export const Dog = ({
     {/* Cute pointy ears with fluffy inner */}
     <g>
       <path
-        d="M16 22 Q12 6 24 14"
+        d={safePath("M16 22 Q12 6 24 14")}
         fill="#E8B87C"
         stroke="#D4A574"
         strokeWidth="2"
         strokeLinejoin="round"
       />
-      <path d="M18 20 Q16 10 23 16" fill="#FFE4C4" />
-      <path d="M19 19 Q18 12 22 16" fill="#FFFBF0" opacity="0.6" />
+      <path d={safePath("M18 20 Q16 10 23 16")} fill="#FFE4C4" />
+      <path d={safePath("M19 19 Q18 12 22 16")} fill="#FFFBF0" opacity="0.6" />
 
       <path
-        d="M64 22 Q68 6 56 14"
+        d={safePath("M64 22 Q68 6 56 14")}
         fill="#E8B87C"
         stroke="#D4A574"
         strokeWidth="2"
         strokeLinejoin="round"
       />
-      <path d="M62 20 Q64 10 57 16" fill="#FFE4C4" />
-      <path d="M61 19 Q62 12 58 16" fill="#FFFBF0" opacity="0.6" />
+      <path d={safePath("M62 20 Q64 10 57 16")} fill="#FFE4C4" />
+      <path d={safePath("M61 19 Q62 12 58 16")} fill="#FFFBF0" opacity="0.6" />
     </g>
 
     {/* BIG rosy cheeks - extra pink! */}
@@ -1265,19 +1273,19 @@ export const Dog = ({
         <circle cx="31" cy="29" r="1" fill="#FFF" opacity="0.6" />
         <circle cx="47" cy="29" r="1" fill="#FFF" opacity="0.6" />
         <path
-          d="M26 22 Q32 26 38 22"
+          d={safePath("M26 22 Q32 26 38 22")}
           stroke="#D4A574"
           strokeWidth="2"
           fill="none"
         />
         <path
-          d="M42 22 Q48 26 54 22"
+          d={safePath("M42 22 Q48 26 54 22")}
           stroke="#D4A574"
           strokeWidth="2"
           fill="none"
         />
         <motion.path
-          d="M52 36 Q54 42 52 46"
+          d={safePath("M52 36 Q54 42 52 46")}
           stroke="#87CEEB"
           strokeWidth="3.5"
           fill="none"
@@ -1289,14 +1297,14 @@ export const Dog = ({
     ) : isHappy ? (
       <>
         <path
-          d="M27 29 Q32 21 37 29"
+          d={safePath("M27 29 Q32 21 37 29")}
           stroke="#2D2D2D"
           strokeWidth="3.5"
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M43 29 Q48 21 53 29"
+          d={safePath("M43 29 Q48 21 53 29")}
           stroke="#2D2D2D"
           strokeWidth="3.5"
           fill="none"
@@ -1341,13 +1349,13 @@ export const Dog = ({
 
     {/* Happy doggy smile with tongue */}
     <path
-      d="M40 43 L40 46"
+      d={safePath("M40 43 L40 46")}
       stroke="#D4A574"
       strokeWidth="2"
       strokeLinecap="round"
     />
     <path
-      d={isSad ? "M34 48 Q40 44 46 48" : "M34 46 Q40 53 46 46"}
+      d={safePath(isSad ? "M34 48 Q40 44 46 48" : "M34 46 Q40 53 46 46")}
       stroke="#D4A574"
       strokeWidth="2.5"
       fill="none"
@@ -1423,7 +1431,7 @@ export const Dog = ({
             transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }}
           >
             <path
-              d="M40 18 C40 16 38 15 37 16 C36 17 36 18 37 19 L40 21 L43 19 C44 18 44 17 43 16 C42 15 40 16 40 18"
+              d={safePath("M40 18 C40 16 38 15 37 16 C36 17 36 18 37 19 L40 21 L43 19 C44 18 44 17 43 16 C42 15 40 16 40 18")}
               fill="#FF9AA2"
               transform={`translate(${i * 9 - 9}, ${i * 3})`}
             />
@@ -1494,13 +1502,13 @@ export const Duck = ({
       />
       <ellipse cx="56" cy="52" rx="6" ry="12" fill="#FFE082" opacity="0.7" />
       <path
-        d="M56 48 Q58 52 56 56"
+        d={safePath("M56 48 Q58 52 56 56")}
         stroke="#FFD54F"
         strokeWidth="1"
         opacity="0.5"
       />
       <path
-        d="M54 50 Q56 52 54 54"
+        d={safePath("M54 50 Q56 52 54 54")}
         stroke="#FFD54F"
         strokeWidth="1"
         opacity="0.5"
@@ -1547,19 +1555,19 @@ export const Duck = ({
         <circle cx="33" cy="29" r="1" fill="#FFF" opacity="0.6" />
         <circle cx="45" cy="29" r="1" fill="#FFF" opacity="0.6" />
         <path
-          d="M28 22 Q34 26 40 22"
+          d={safePath("M28 22 Q34 26 40 22")}
           stroke="#FFD54F"
           strokeWidth="2"
           fill="none"
         />
         <path
-          d="M40 22 Q46 26 52 22"
+          d={safePath("M40 22 Q46 26 52 22")}
           stroke="#FFD54F"
           strokeWidth="2"
           fill="none"
         />
         <motion.path
-          d="M50 34 Q52 40 50 44"
+          d={safePath("M50 34 Q52 40 50 44")}
           stroke="#87CEEB"
           strokeWidth="3.5"
           fill="none"
@@ -1571,14 +1579,14 @@ export const Duck = ({
     ) : isHappy ? (
       <>
         <path
-          d="M30 29 Q34 21 38 29"
+          d={safePath("M30 29 Q34 21 38 29")}
           stroke="#2D2D2D"
           strokeWidth="3.5"
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M42 29 Q46 21 50 29"
+          d={safePath("M42 29 Q46 21 50 29")}
           stroke="#2D2D2D"
           strokeWidth="3.5"
           fill="none"
@@ -1632,7 +1640,7 @@ export const Duck = ({
     {/* Cute smile line */}
     {!isSad && (
       <path
-        d="M34 42 Q40 44 46 42"
+        d={safePath("M34 42 Q40 44 46 42")}
         stroke="#FF9800"
         strokeWidth="1.5"
         fill="none"
@@ -1656,12 +1664,12 @@ export const Duck = ({
         strokeWidth="1"
       />
       <path
-        d="M28 72 L28 76 M32 72 L32 76 M36 72 L36 76"
+        d={safePath("M28 72 L28 76 M32 72 L32 76 M36 72 L36 76")}
         stroke="#FF7043"
         strokeWidth="1"
       />
       <path
-        d="M28 76 Q32 78 36 76"
+        d={safePath("M28 76 Q32 78 36 76")}
         stroke="#FF7043"
         strokeWidth="1"
         fill="none"
@@ -1677,12 +1685,12 @@ export const Duck = ({
         strokeWidth="1"
       />
       <path
-        d="M44 72 L44 76 M48 72 L48 76 M52 72 L52 76"
+        d={safePath("M44 72 L44 76 M48 72 L48 76 M52 72 L52 76")}
         stroke="#FF7043"
         strokeWidth="1"
       />
       <path
-        d="M44 76 Q48 78 52 76"
+        d={safePath("M44 76 Q48 78 52 76")}
         stroke="#FF7043"
         strokeWidth="1"
         fill="none"
@@ -1868,13 +1876,13 @@ export const Lamb = ({
         <circle cx="47" cy="33" r="1.2" fill="#FFF" />
         {/* Sad eyebrows */}
         <path
-          d="M31 30 Q34 32 37 30"
+          d={safePath("M31 30 Q34 32 37 30")}
           stroke="#CDB891"
           strokeWidth="1.5"
           fill="none"
         />
         <path
-          d="M43 30 Q46 32 49 30"
+          d={safePath("M43 30 Q46 32 49 30")}
           stroke="#CDB891"
           strokeWidth="1.5"
           fill="none"
@@ -1894,14 +1902,14 @@ export const Lamb = ({
       <>
         {/* Happy closed eyes */}
         <path
-          d="M31 34 Q34 31 37 34"
+          d={safePath("M31 34 Q34 31 37 34")}
           stroke="#2C2C2C"
           strokeWidth="2"
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M43 34 Q46 31 49 34"
+          d={safePath("M43 34 Q46 31 49 34")}
           stroke="#2C2C2C"
           strokeWidth="2"
           fill="none"
@@ -1925,7 +1933,7 @@ export const Lamb = ({
 
     {/* Mouth - sweet smile */}
     <path
-      d={isSad ? "M36 45 Q40 43 44 45" : "M36 45 Q40 48 44 45"}
+      d={safePath(isSad ? "M36 45 Q40 43 44 45" : "M36 45 Q40 48 44 45")}
       stroke="#2C2C2C"
       strokeWidth="1.5"
       fill="none"
@@ -1938,7 +1946,7 @@ export const Lamb = ({
         {[0, 1].map((i) => (
           <motion.path
             key={i}
-            d="M40 22 C40 20 38.5 19 37.5 20 C36.5 21 36.5 22 37.5 23 L40 25 L42.5 23 C43.5 22 43.5 21 42.5 20 C41.5 19 40 20 40 22"
+            d={safePath("M40 22 C40 20 38.5 19 37.5 20 C36.5 21 36.5 22 37.5 23 L40 25 L42.5 23 C43.5 22 43.5 21 42.5 20 C41.5 19 40 20 40 22")}
             fill="#FFB6C1"
             initial={{ opacity: 0, y: 0, scale: 0 }}
             animate={{
@@ -2039,13 +2047,13 @@ export const Hedgehog = ({
         <circle cx="47" cy="53" r="1.2" fill="#FFF" />
         {/* Sad eyebrows */}
         <path
-          d="M31 50 Q34 52 37 50"
+          d={safePath("M31 50 Q34 52 37 50")}
           stroke="#8B7355"
           strokeWidth="1.5"
           fill="none"
         />
         <path
-          d="M43 50 Q46 52 49 50"
+          d={safePath("M43 50 Q46 52 49 50")}
           stroke="#8B7355"
           strokeWidth="1.5"
           fill="none"
@@ -2065,14 +2073,14 @@ export const Hedgehog = ({
       <>
         {/* Happy closed eyes */}
         <path
-          d="M31 54 Q34 51 37 54"
+          d={safePath("M31 54 Q34 51 37 54")}
           stroke="#2C2C2C"
           strokeWidth="2"
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M43 54 Q46 51 49 54"
+          d={safePath("M43 54 Q46 51 49 54")}
           stroke="#2C2C2C"
           strokeWidth="2"
           fill="none"
@@ -2096,7 +2104,7 @@ export const Hedgehog = ({
 
     {/* Mouth - sweet smile */}
     <path
-      d={isSad ? "M36 63 Q40 61 44 63" : "M36 63 Q40 66 44 63"}
+      d={safePath(isSad ? "M36 63 Q40 61 44 63" : "M36 63 Q40 66 44 63")}
       stroke="#2C2C2C"
       strokeWidth="1.5"
       fill="none"
@@ -2132,7 +2140,7 @@ export const Hedgehog = ({
         {[0, 1].map((i) => (
           <motion.path
             key={i}
-            d="M40 42 C40 40 38.5 39 37.5 40 C36.5 41 36.5 42 37.5 43 L40 45 L42.5 43 C43.5 42 43.5 41 42.5 40 C41.5 39 40 40 40 42"
+            d={safePath("M40 42 C40 40 38.5 39 37.5 40 C36.5 41 36.5 42 37.5 43 L40 45 L42.5 43 C43.5 42 43.5 41 42.5 40 C41.5 39 40 40 40 42")}
             fill="#FFB6C1"
             initial={{ opacity: 0, y: 0, scale: 0 }}
             animate={{

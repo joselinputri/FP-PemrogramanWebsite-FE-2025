@@ -1,4 +1,4 @@
-import { apiClient, ApiError } from "./apiClient";
+import { apiClient } from "./apiClient";
 
 // ========== TYPE DEFINITIONS ==========
 export interface GameSession {
@@ -8,7 +8,7 @@ export interface GameSession {
   totalQuestions: number;
   timeSpent: number;
   difficulty: string;
-  coinsEarned: number; // ✅ Add coins earned
+  coinsEarned: number;
 }
 
 export interface LeaderboardEntry {
@@ -21,7 +21,7 @@ export interface LeaderboardEntry {
 
 export interface UserProgress {
   playerName: string;
-  coins: number; // ✅ User's total coins balance
+  coins: number;
   highScore: number;
   gamesPlayed: number;
   pendants: Record<string, number>;
@@ -47,20 +47,18 @@ export interface OwnedPendantsResponse {
   pendants: PendantResponse[];
 }
 
-// ========== CRUD FUNCTIONS ==========
+// ========== GAME API ==========
 export const gameApi = {
-  // ===== COINS ENDPOINTS =====
-
-  // ✅ GET - Get user's current coins balance
+  // ✅ COINS - Get user's coins (AUTH REQUIRED)
   async getUserCoins(): Promise<CoinsResponse> {
-    return apiClient.get("/api/game/game-type/watch-and-memorize/coins");
+    return apiClient.get("/game/game-type/watch-and-memorize/coins");
   },
 
-  // ✅ POST - Submit game result dengan automatic coins addition
+  // ✅ SUBMIT RESULT - Submit game & earn coins
   async submitGameResult(
     gameId: string,
     session: GameSession,
-  ): Promise<{ success: boolean; coinsEarned: number }> {
+  ): Promise<any> {
     return apiClient.post(
       `/api/game/game-type/watch-and-memorize/${gameId}/submit`,
       {
@@ -73,91 +71,29 @@ export const gameApi = {
     );
   },
 
-  // ===== PENDANT ENDPOINTS =====
+  // ✅ LEADERBOARD - Get game leaderboard (PUBLIC)
+  async getLeaderboard(gameId: string, limit: number = 10): Promise<any> {
+    return apiClient.get(
+      `/api/game/game-type/watch-and-memorize/${gameId}/leaderboard?limit=${limit}`
+    );
+  },
 
-  // ✅ GET - Get available pendants in shop
+  // ✅ PENDANT SHOP - Get available pendants (PUBLIC)
   async getAvailablePendants(): Promise<PendantResponse[]> {
-    return apiClient.get(
-      "/api/game/game-type/watch-and-memorize/pendant/shop",
-    );
+    return apiClient.get("/game/game-type/watch-and-memorize/pendant/shop");
   },
 
-  // ✅ GET - Get user's owned pendants
+  // ✅ OWNED PENDANTS - Get user's pendants (AUTH REQUIRED)
   async getOwnedPendants(): Promise<OwnedPendantsResponse> {
-    return apiClient.get(
-      "/api/game/game-type/watch-and-memorize/pendant/owned",
-    );
+    return apiClient.get("/game/game-type/watch-and-memorize/pendant/owned");
   },
 
-  // ✅ POST - Purchase pendant (deduct coins, add to inventory)
-  async purchasePendant(
-    pendantId: string,
-  ): Promise<{ success: boolean; pendantName: string; newQuantity: number }> {
+  // ✅ PURCHASE PENDANT - Buy pendant with coins (AUTH REQUIRED)
+  async purchasePendant(pendantId: string): Promise<any> {
     return apiClient.post(
-      "/api/game/game-type/watch-and-memorize/pendant/purchase",
+      "/game/game-type/watch-and-memorize/pendant/purchase",
       { pendantId },
     );
   },
 
-  // ===== LEGACY ENDPOINTS (kept for backward compatibility) =====
-
-  // CREATE - Save game session
-  async saveGameSession(session: GameSession): Promise<{ id: string }> {
-    return apiClient.post("/api/game/sessions", session);
-  },
-
-  // CREATE - Add to leaderboard
-  async addToLeaderboard(entry: LeaderboardEntry): Promise<{ id: string }> {
-    return apiClient.post("/api/game/leaderboard", entry);
-  },
-
-  // CREATE - Increment play count
-  async incrementPlayCount(): Promise<{ count: number }> {
-    return apiClient.post("/api/game/play-count", {});
-  },
-
-  // CREATE/UPDATE - Save user progress (dengan coins)
-  async saveUserProgress(
-    progress: UserProgress,
-  ): Promise<{ success: boolean }> {
-    return apiClient.post("/api/game/progress", progress);
-  },
-
-  // READ - Get leaderboard
-  async getLeaderboard(limit: number = 10): Promise<LeaderboardEntry[]> {
-    return apiClient.get(`/api/game/leaderboard?limit=${limit}`);
-  },
-
-  // READ - Get user progress (includes coins)
-  async getUserProgress(playerName: string): Promise<UserProgress | null> {
-    try {
-      return await apiClient.get(`/api/game/progress/${playerName}`);
-    } catch (error) {
-      if ((error as ApiError).status === 404) return null;
-      throw error;
-    }
-  },
-
-  // READ - Get play count
-  async getPlayCount(): Promise<{ count: number }> {
-    return apiClient.get("/api/game/play-count");
-  },
-
-  // READ - Get user's game history
-  async getUserGameHistory(playerName: string): Promise<GameSession[]> {
-    return apiClient.get(`/api/game/sessions/${playerName}`);
-  },
-
-  // UPDATE - Update user progress (dengan coins)
-  async updateUserProgress(
-    playerName: string,
-    progress: Partial<UserProgress>,
-  ): Promise<{ success: boolean }> {
-    return apiClient.put(`/api/game/progress/${playerName}`, progress);
-  },
-
-  // DELETE - Clear user progress (untuk testing)
-  async clearUserProgress(playerName: string): Promise<{ success: boolean }> {
-    return apiClient.delete(`/api/game/progress/${playerName}`);
-  },
 };

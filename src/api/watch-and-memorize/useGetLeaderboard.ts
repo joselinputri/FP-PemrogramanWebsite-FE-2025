@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import api from '@/api/axios';
 
 interface LeaderboardEntry {
@@ -18,14 +18,34 @@ interface LeaderboardResponse {
 }
 
 export const useGetLeaderboard = (gameId: string, limit: number = 10) => {
-  return useQuery({
-    queryKey: ['leaderboard', gameId, limit],
-    queryFn: async (): Promise<LeaderboardResponse> => {
-      const response = await api.get(
-        `/api/game/watch-and-memorize/${gameId}/leaderboard?limit=${limit}`
-      );
-      return response.data;
-    },
-    enabled: !!gameId,
-  });
+  const [data, setData] = useState<LeaderboardResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (!gameId) {
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchLeaderboard = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get(
+          `/api/game/game-type/watch-and-memorize/${gameId}/leaderboard?limit=${limit}`
+        );
+       
+        setData(response.data.data);
+        setError(null);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLeaderboard();
+  }, [gameId, limit]);
+
+  return { data, isLoading, error };
 };

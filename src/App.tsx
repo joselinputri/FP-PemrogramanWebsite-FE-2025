@@ -20,9 +20,9 @@ import EditAnagram from "./pages/Anagram/EditAnagram";
 import PairOrNoPairGame from "./pages/pair-or-no-pair";
 import CreatePairOrNoPair from "./pages/pair-or-no-pair/create";
 
-import WatchMemorize from "./pages/watch-and-memorize/PlayWatchAndMemorize"; 
 import CreateWatchMemorize from "./pages/watch-and-memorize/CreateGame";
 import EditWatchMemorize from "./pages/watch-and-memorize/EditGame"; 
+import PlayWatchAndMemorize from "./pages/watch-and-memorize/PlayWatchAndMemorize";
 
 function App() {
   return (
@@ -36,8 +36,7 @@ function App() {
         <Route path="/speed-sorting/play/:id" element={<SpeedSorting />} />
         <Route path="/anagram/play/:id" element={<PlayAnagram />} />
         <Route path="/pair-or-no-pair/play/:gameId" element={<PairOrNoPairGame />} />
-        <Route path="/watch-and-memorize/play/:id" element={<WatchMemorize />} />
-
+        <Route path="/watch-and-memorize/play/:gameId" element={<PlayWatchAndMemorize />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/my-projects" element={<MyProjectsPage />} />

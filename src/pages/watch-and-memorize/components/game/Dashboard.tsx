@@ -15,8 +15,8 @@ import { useBackgroundMusic } from "../../hooks/useBackgroundMusic";
 import { gameApi } from "@/api/watch-and-memorize/gameApi";
 import type {
   GameSession,
-  LeaderboardEntry as ApiLeaderboardEntry,
 } from "@/api/watch-and-memorize/gameApi";
+import { useGetLeaderboard } from "@/api/watch-and-memorize/useGetLeaderboard";
 import {
   Play,
   ShoppingBag,
@@ -31,7 +31,6 @@ import {
 } from "lucide-react";
 import { ANIMALS } from "../animals/animalData";
 
-// Define Difficulty type locally (fix import error)
 export type Difficulty = "easy" | "medium" | "hard";
 
 type View = "dashboard" | "playing" | "scoreboard" | "intro" | "leaderboard";
@@ -67,7 +66,7 @@ interface GameConfig {
 
 interface DashboardProps {
   onExit?: () => void;
-  gameConfig?: GameConfig; // Optional game config from backend
+  gameConfig?: GameConfig;
   onGameComplete: (
     score: number,
     correctAnswers: number,
@@ -173,7 +172,7 @@ const TrophyIcon = ({ size = 32 }: { size?: number }) => (
   </svg>
 );
 
-export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
+export const Dashboard = ({ onExit, gameConfig, onGameComplete }: DashboardProps) => {
   const [view, setView] = useState<View>("dashboard");
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem("watchAndMemorize_gameState");
@@ -211,7 +210,8 @@ export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
     toggleMute,
   } = useBackgroundMusic();
 
-  // USE gameConfig untuk override default values
+  const { data: leaderboardData } = useGetLeaderboard(gameConfig?.id || '', 10);
+
   const DIFFICULTY_CONFIGS = gameConfig?.difficulty_configs || {
     easy: {
       animalsToWatch: 3,
@@ -285,7 +285,7 @@ export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
     const pendantConfig = SHOP_CONFIG[type];
 
     if (!pendantConfig.available) {
-      return; // Pendant disabled by admin
+      return;
     }
 
     const price = pendantConfig.price;
@@ -329,7 +329,9 @@ export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
       gamesPlayed: prev.gamesPlayed + 1,
     }));
 
-    if (gameState.playerName) {
+    onGameComplete(score, correct, total, timeSpent, coinsEarned);
+
+    if (gameState.playerName && gameConfig?.id) {
       try {
         const session: GameSession = {
           playerName: gameState.playerName,
@@ -340,55 +342,34 @@ export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
           difficulty: selectedDifficulty,
           coinsEarned,
         };
-        await gameApi.saveGameSession(session);
-
-        const leaderboardEntry: ApiLeaderboardEntry = {
-          name: gameState.playerName,
-          score,
-          difficulty: selectedDifficulty,
-          timeSpent,
-        };
-        await gameApi.addToLeaderboard(leaderboardEntry);
-
-        const updatedLeaderboard = await gameApi.getLeaderboard(10);
-        setLeaderboard(
-          updatedLeaderboard.map((entry, index) => ({
-            name: entry.name,
-            score: entry.score,
-            avatar: index % 8,
-            date: entry.createdAt
-              ? new Date(entry.createdAt).toLocaleDateString()
-              : "Just now",
-            time: entry.timeSpent,
-          })),
-        );
-
-        console.log("✅ Game data saved to backend");
+        
+        await gameApi.submitGameResult(gameConfig.id, session);
+        console.log("✅ Game result submitted successfully");
+        
       } catch (error) {
-        console.error("❌ Failed to save to backend:", error);
-        const newEntry: LeaderboardEntry = {
-          name: gameState.playerName,
-          score,
-          avatar: Math.floor(Math.random() * 8),
-          date: "Just now",
-          time: timeSpent,
-        };
-        setLeaderboard((prev) => {
-          const updated = [...prev, newEntry]
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 10);
-          localStorage.setItem(
-            "watchAndMemorize_leaderboard",
-            JSON.stringify(updated),
-          );
-          return updated;
-        });
+        console.error("❌ Failed to submit result:", error);
       }
     }
 
-    setView("scoreboard");
-  };
+    if (gameState.playerName) {
+      const newEntry: LeaderboardEntry = {
+        name: gameState.playerName,
+        score,
+        avatar: Math.floor(Math.random() * 8),
+        date: "Just now",
+        time: timeSpent,
+      };
+      
+      setLeaderboard((prev) => {
+        const updated = [...prev, newEntry]
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 10);
+        return updated;
+      });
+    }
 
+    setView("scoreboard");
+  }; 
   const handleStartGame = () => {
     if (!gameState.playerName) {
       setShowNameInput(true);
@@ -407,13 +388,7 @@ export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
     }
   };
 
-  const handleExit = async () => {
-    try {
-      await gameApi.incrementPlayCount();
-      console.log("✅ Play count incremented");
-    } catch (error) {
-      console.error("❌ Failed to increment play count:", error);
-    }
+  const handleExit = () => {
     if (onExit) {
       onExit();
     }
@@ -446,82 +421,22 @@ export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
     }
   }, [view, playSound]);
 
-  // Load leaderboard from backend on mount
   useEffect(() => {
-    const loadLeaderboard = async () => {
-      try {
-        const data = await gameApi.getLeaderboard(10);
-        setLeaderboard(
-          data.map((entry, index) => ({
-            name: entry.name,
-            score: entry.score,
-            avatar: index % 8,
-            date: entry.createdAt
-              ? new Date(entry.createdAt).toLocaleDateString()
-              : "Recently",
-            time: entry.timeSpent,
-          })),
-        );
-        console.log("✅ Leaderboard loaded from backend");
-      } catch (error) {
-        console.error("❌ Failed to load leaderboard:", error);
-        const saved = localStorage.getItem("watchAndMemorize_leaderboard");
-        if (saved) {
-          setLeaderboard(JSON.parse(saved));
-        }
-      }
-    };
-
-    loadLeaderboard();
-  }, []);
-
-  // Load user progress when player name is set
-  useEffect(() => {
-    const loadUserProgress = async () => {
-      if (gameState.playerName) {
-        try {
-          const progress = await gameApi.getUserProgress(gameState.playerName);
-          if (progress) {
-            setGameState((prev) => ({
-              ...prev,
-              coins: progress.coins,
-              highScore: progress.highScore,
-              gamesPlayed: progress.gamesPlayed,
-              pendants: progress.pendants,
-            }));
-            console.log("✅ User progress loaded from backend");
-          }
-        } catch (error) {
-          console.error("❌ Failed to load user progress:", error);
-        }
-      }
-    };
-
-    loadUserProgress();
-  }, [gameState.playerName]);
-
-  // Auto-save user progress (debounced)
-  useEffect(() => {
-    const saveUserProgress = async () => {
-      if (gameState.playerName && gameState.gamesPlayed > 0) {
-        try {
-          await gameApi.saveUserProgress({
-            playerName: gameState.playerName,
-            coins: gameState.coins,
-            highScore: gameState.highScore,
-            gamesPlayed: gameState.gamesPlayed,
-            pendants: gameState.pendants,
-          });
-          console.log("✅ User progress auto-saved");
-        } catch (error) {
-          console.error("❌ Failed to save user progress:", error);
-        }
-      }
-    };
-
-    const timeoutId = setTimeout(saveUserProgress, 2000);
-    return () => clearTimeout(timeoutId);
-  }, [gameState]);
+    if (leaderboardData?.leaderboard && leaderboardData.leaderboard.length > 0) {
+      const formattedLeaderboard = leaderboardData.leaderboard.map((entry, index) => ({
+        name: entry.username, // Dari backend field: username
+        score: entry.score,
+        avatar: index % 8,
+        date: entry.created_at 
+          ? new Date(entry.created_at).toLocaleDateString()
+          : "Recently",
+        time: entry.time_taken, // Dari backend field: time_taken
+      }));
+    
+      setLeaderboard(formattedLeaderboard);
+      console.log("✅ Leaderboard loaded from backend");
+    }
+  }, [leaderboardData]);
 
   if (view === "intro") {
     return (
@@ -847,8 +762,6 @@ export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
                 className="ml-1 p-1.5 rounded-full bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // PART 2 - Continue from Part 1
-
                   setShowLogoutConfirm(true);
                 }}
                 whileHover={{ scale: 1.1, rotate: 10 }}
@@ -1158,7 +1071,8 @@ export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
           transition={{ duration: 2.5, repeat: Infinity }}
         >
           {(() => {
-            const Animal = ANIMALS[0].component;
+            const Animal = ANIMALS[0]?.component;
+            if (!Animal) return null; 
             return <Animal size={45} isHappy={true} />;
           })()}
         </motion.div>
@@ -1168,7 +1082,8 @@ export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
           transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
         >
           {(() => {
-            const AnimalComponent = ANIMALS[2].component;
+            const AnimalComponent = ANIMALS[2]?.component;
+            if (!AnimalComponent) return null; 
             return <AnimalComponent size={45} isHappy={true} />;
           })()}
         </motion.div>
@@ -1500,4 +1415,4 @@ export const Dashboard = ({ onExit, gameConfig }: DashboardProps) => {
       </AnimatePresence>
     </div>
   );
-};
+}
