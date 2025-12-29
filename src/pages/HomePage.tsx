@@ -16,6 +16,7 @@ import { Typography } from "@/components/ui/typography";
 import { useAuthStore } from "@/store/useAuthStore";
 import { ChevronDown, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import iconHeartSolid from "../assets/images/icon-heart-solid.svg";
 import iconHeart from "../assets/images/icon-heart.svg";
 import iconPlay from "../assets/images/icon-play.svg";
@@ -31,6 +32,25 @@ type GameTemplate = {
   description: string;
   is_time_limit_based: boolean;
   is_life_based: boolean;
+};
+
+type GameApiResponse = {
+  id: string;
+  name: string;
+  description: string;
+  thumbnail_image: string | null;
+  game_template_name?: string;
+  game_template_slug?: string;
+  game_template?: {
+    id: string;
+    slug: string;
+    name: string;
+  };
+  total_liked: number;
+  total_played: number;
+  creator_id: string;
+  creator_name: string;
+  is_game_liked: boolean;
 };
 
 type Game = {
@@ -52,6 +72,7 @@ export default function HomePage() {
   const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = !!(token && user);
+  const navigate = useNavigate();
 
   // FIXED: Initialize dengan array kosong untuk menghindari undefined
   const [games, setGames] = useState<Game[]>([]);
@@ -82,6 +103,9 @@ export default function HomePage() {
         }
       } catch (err) {
         console.error("Failed to fetch game templates:", err);
+        setGameTemplates(response.data.data);
+      } catch {
+        // Silently fail template fetch
       }
     };
     fetchGameTemplates();
@@ -107,7 +131,6 @@ export default function HomePage() {
         const url = queryString ? `/api/game?${queryString}` : "/api/game";
 
         const response = await api.get(url);
-        console.log("Fetched games data:", response.data);
 
         // FIXED: Tambahkan validasi response data
         if (response.data && Array.isArray(response.data.data)) {
@@ -131,6 +154,27 @@ export default function HomePage() {
         setError("Failed to fetch games. Please try again later.");
         console.error("Fetch error:", err);
         // FIXED: Set games ke array kosong saat error
+        setGames(
+          response.data.data.map(
+            (g: GameApiResponse) =>
+              ({
+                id: g.id,
+                name: g.name,
+                description: g.description,
+                thumbnail_image: g.thumbnail_image,
+                game_template_name: g.game_template_name || "",
+                game_template_slug: g.game_template_slug || "",
+                total_liked: g.total_liked || 0,
+                total_played: g.total_played || 0,
+                creator_id: g.creator_id,
+                creator_name: g.creator_name,
+                is_game_liked: g.is_game_liked || false,
+                is_liked: g.is_game_liked || false,
+              }) as Game,
+          ),
+        );
+      } catch {
+        setError("Failed to fetch games. Please try again later.");
         setGames([]);
       } finally {
         if (initialLoading) {
@@ -177,9 +221,7 @@ export default function HomePage() {
         game_id: gameId,
         is_like: newIsLiked,
       });
-    } catch (err) {
-      console.error("Failed to like game:", err);
-
+    } catch {
       setGames((prev) =>
         prev.map((game) => {
           if (game.id === gameId) {
@@ -199,8 +241,26 @@ export default function HomePage() {
 
   const GameCard = ({ game }: { game: Game }) => {
     const handlePlayGame = () => {
-      window.location.href = `/${game.game_template_slug}/play/${game.id}`;
+      if (!game.game_template_slug) {
+        console.error("Game template slug is missing for game:", game);
+        return;
+      }
+      navigate(`/${game.game_template_slug}/play/${game.id}`);
     };
+
+    // --- LOGIC GAMBAR YANG BENAR ---
+    // Prioritaskan gambar dari database (hasil upload)
+    let imageUrl = thumbnailPlaceholder;
+
+    if (game.thumbnail_image && game.thumbnail_image !== "default_image.jpg") {
+      // Cek apakah URL absolut atau relatif
+      if (game.thumbnail_image.startsWith("http")) {
+        imageUrl = game.thumbnail_image;
+      } else {
+        // Jika relatif (uploads/...), tambahkan URL Backend
+        imageUrl = `${import.meta.env.VITE_API_URL}/${game.thumbnail_image}`;
+      }
+    }
 
     return (
       <Card
@@ -209,13 +269,13 @@ export default function HomePage() {
       >
         <div className="p-4 pb-0">
           <img
-            src={
-              game.thumbnail_image
-                ? `${import.meta.env.VITE_API_URL}/${game.thumbnail_image}`
-                : thumbnailPlaceholder
-            }
-            alt={game.thumbnail_image ? game.name : "Placeholder Thumbnail"}
+            src={imageUrl}
+            alt={game.name}
             className="w-full aspect-video object-cover rounded-md"
+            onError={(e) => {
+              // Fallback jika gambar rusak
+              e.currentTarget.src = thumbnailPlaceholder;
+            }}
           />
         </div>
 
@@ -232,7 +292,7 @@ export default function HomePage() {
             </Badge>
           </div>
 
-          <Typography variant="muted" className="text-sm mb-4">
+          <Typography variant="muted" className="text-sm mb-4 line-clamp-2">
             {game.description}
           </Typography>
 
@@ -244,7 +304,7 @@ export default function HomePage() {
               </span>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex gap-3">
               {isAuthenticated ? (
                 <div
                   className="flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform ease-in-out duration-150"
