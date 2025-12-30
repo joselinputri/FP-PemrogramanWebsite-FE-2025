@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import api from '@/api/axios';
-import type { Pendant } from './useGetPendantShop';
+import { useState, useEffect } from "react";
+import api from "@/api/axios";
+import type { Pendant } from "./useGetPendantShop";
 
 export interface PendantWithQuantity extends Pendant {
   owned: number;
@@ -20,7 +20,7 @@ export const useGetOwnedPendants = () => {
     try {
       setIsLoading(true);
       const response = await api.get<{ data: OwnedPendantsResponse }>(
-        '/game/game-type/watch-and-memorize/pendant/owned'
+        "/game/game-type/watch-and-memorize/pendant/owned",
       );
       setData(response.data.data);
       setError(null);

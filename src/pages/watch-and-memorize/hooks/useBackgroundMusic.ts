@@ -17,9 +17,11 @@ export const useBackgroundMusic = () => {
   const fadeIntervalRef = useRef<number | null>(null);
   const initAudio = useCallback(() => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext ||
+      audioContextRef.current = new (
+        window.AudioContext ||
         (window as unknown as { webkitAudioContext: typeof AudioContext })
-          .webkitAudioContext)();
+          .webkitAudioContext
+      )();
       masterGainRef.current = audioContextRef.current.createGain();
       masterGainRef.current.connect(audioContextRef.current.destination);
       masterGainRef.current.gain.setValueAtTime(

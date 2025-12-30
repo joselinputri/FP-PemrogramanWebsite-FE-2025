@@ -1,5 +1,5 @@
 // src/api/watch-and-memorize/useGetPlayWatchAndMemorize.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import axiosInstance from "@/api/axios";
 
 interface DifficultyConfig {
@@ -48,9 +48,9 @@ export const useGetPlayWatchAndMemorize = (gameId: string) => {
     const fetchGame = async () => {
       try {
         setIsLoading(true);
-        const response = await axiosInstance.get<{ data: IWatchAndMemorizePlayResponse }>(
-          `/api/game/game-type/watch-and-memorize/${gameId}/play`
-        );
+        const response = await axiosInstance.get<{
+          data: IWatchAndMemorizePlayResponse;
+        }>(`/api/game/game-type/watch-and-memorize/${gameId}/play`);
         setData(response.data.data);
         setError(null);
       } catch (err) {

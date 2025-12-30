@@ -2,7 +2,16 @@ import { motion } from "framer-motion";
 import { Penguin } from "../animals/Penguin";
 import { CuteButton } from "../ui/CuteButton";
 import { GameBackground } from "./GameBackground";
-import { Home, RotateCcw, Share2, Clock, Star, Trophy, Sparkles, Heart } from "lucide-react";
+import {
+  Home,
+  RotateCcw,
+  Share2,
+  Clock,
+  Star,
+  Trophy,
+  Sparkles,
+  Heart,
+} from "lucide-react";
 import { useSoundEffects } from "../../hooks/useSoundEffects";
 import { useEffect } from "react";
 
@@ -17,16 +26,22 @@ interface ScoreboardProps {
 }
 
 // Custom star icon
-const StarIcon = ({ size = 24, color = "#FFD700" }: { size?: number; color?: string }) => (
+const StarIcon = ({
+  size = 24,
+  color = "#FFD700",
+}: {
+  size?: number;
+  color?: string;
+}) => (
   <svg width={size} height={size} viewBox="0 0 24 24">
-    <polygon 
-      points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" 
+    <polygon
+      points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"
       fill={color}
       stroke="#E5A800"
       strokeWidth="1"
     />
-    <polygon 
-      points="12,5 13.5,9 17,9 14,12 15,16 12,14 9,16 10,12 7,9 10.5,9" 
+    <polygon
+      points="12,5 13.5,9 17,9 14,12 15,16 12,14 9,16 10,12 7,9 10.5,9"
       fill="#FFEC8B"
     />
   </svg>
@@ -38,17 +53,17 @@ const FloatingHeart = ({ delay, x }: { delay: number; x: number }) => (
     className="absolute"
     style={{ left: `${x}%`, bottom: 0 }}
     initial={{ y: 0, opacity: 0, scale: 0 }}
-    animate={{ 
+    animate={{
       y: -200 - Math.random() * 100,
       opacity: [0, 1, 1, 0],
       scale: [0, 1, 1, 0.5],
-      x: (Math.random() - 0.5) * 50
+      x: (Math.random() - 0.5) * 50,
     }}
-    transition={{ 
+    transition={{
       duration: 3,
       delay,
       repeat: Infinity,
-      repeatDelay: Math.random() * 2
+      repeatDelay: Math.random() * 2,
     }}
   >
     <Heart size={16} fill="#FF6B9D" color="#FF6B9D" />
@@ -66,8 +81,8 @@ export const Scoreboard = ({
 }: ScoreboardProps) => {
   const { playSound } = useSoundEffects(true);
   const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-  const coinsEarned = Math.floor(score / 10) + (correctAnswers * 10);
-  
+  const coinsEarned = Math.floor(score / 10) + correctAnswers * 10;
+
   useEffect(() => {
     // Play win/lose sound
     if (percentage >= 60) {
@@ -76,17 +91,46 @@ export const Scoreboard = ({
       playSound("lose");
     }
   }, [percentage, playSound]);
-  
+
   const getGrade = () => {
-    if (percentage === 100) return { grade: "S", color: "#FFD700", bgColor: "from-yellow-100 to-yellow-200", message: "PERFECT MEMORY!" };
-    if (percentage >= 80) return { grade: "A", color: "#4CAF50", bgColor: "from-green-100 to-green-200", message: "AMAZING JOB!" };
-    if (percentage >= 60) return { grade: "B", color: "#2196F3", bgColor: "from-blue-100 to-blue-200", message: "GREAT EFFORT!" };
-    if (percentage >= 40) return { grade: "C", color: "#FF9800", bgColor: "from-orange-100 to-orange-200", message: "KEEP TRYING!" };
-    return { grade: "D", color: "#F44336", bgColor: "from-red-100 to-red-200", message: "PRACTICE MORE!" };
+    if (percentage === 100)
+      return {
+        grade: "S",
+        color: "#FFD700",
+        bgColor: "from-yellow-100 to-yellow-200",
+        message: "PERFECT MEMORY!",
+      };
+    if (percentage >= 80)
+      return {
+        grade: "A",
+        color: "#4CAF50",
+        bgColor: "from-green-100 to-green-200",
+        message: "AMAZING JOB!",
+      };
+    if (percentage >= 60)
+      return {
+        grade: "B",
+        color: "#2196F3",
+        bgColor: "from-blue-100 to-blue-200",
+        message: "GREAT EFFORT!",
+      };
+    if (percentage >= 40)
+      return {
+        grade: "C",
+        color: "#FF9800",
+        bgColor: "from-orange-100 to-orange-200",
+        message: "KEEP TRYING!",
+      };
+    return {
+      grade: "D",
+      color: "#F44336",
+      bgColor: "from-red-100 to-red-200",
+      message: "PRACTICE MORE!",
+    };
   };
 
   const gradeInfo = getGrade();
-  
+
   // Format time nicely
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -106,12 +150,13 @@ export const Scoreboard = ({
     >
       {/* Beautiful background */}
       <GameBackground />
-      
+
       {/* Floating hearts - elegant celebration */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {percentage >= 60 && [...Array(12)].map((_, i) => (
-          <FloatingHeart key={i} delay={i * 0.3} x={10 + (i * 7)} />
-        ))}
+        {percentage >= 60 &&
+          [...Array(12)].map((_, i) => (
+            <FloatingHeart key={i} delay={i * 0.3} x={10 + i * 7} />
+          ))}
       </div>
 
       {/* Elegant sparkle effects */}
@@ -176,7 +221,11 @@ export const Scoreboard = ({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            Great effort, <span className="text-primary font-semibold">{playerName || "Player"}</span>!
+            Great effort,{" "}
+            <span className="text-primary font-semibold">
+              {playerName || "Player"}
+            </span>
+            !
           </motion.p>
           <motion.p
             className="text-sm text-muted-foreground font-body mt-1"
@@ -184,7 +233,8 @@ export const Scoreboard = ({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            You finished in <span className="text-warning font-semibold">{timeString}</span>
+            You finished in{" "}
+            <span className="text-warning font-semibold">{timeString}</span>
           </motion.p>
         </div>
 
@@ -194,7 +244,11 @@ export const Scoreboard = ({
           animate={{ y: [-5, 5, -5] }}
           transition={{ repeat: Infinity, duration: 2 }}
         >
-          <Penguin size={90} isHappy={percentage >= 60} isSad={percentage < 40} />
+          <Penguin
+            size={90}
+            isHappy={percentage >= 60}
+            isSad={percentage < 40}
+          />
         </motion.div>
 
         {/* Grade circle */}
@@ -209,14 +263,18 @@ export const Scoreboard = ({
             {/* Animated ring */}
             <svg className="absolute w-full h-full" viewBox="0 0 100 100">
               <circle
-                cx="50" cy="50" r="42"
+                cx="50"
+                cy="50"
+                r="42"
                 fill="none"
                 stroke="hsl(var(--muted))"
                 strokeWidth="6"
                 opacity="0.3"
               />
               <motion.circle
-                cx="50" cy="50" r="42"
+                cx="50"
+                cy="50"
+                r="42"
                 fill="none"
                 stroke={gradeInfo.color}
                 strokeWidth="6"
@@ -224,7 +282,9 @@ export const Scoreboard = ({
                 strokeDasharray={`${percentage * 2.64} ${264 - percentage * 2.64}`}
                 transform="rotate(-90 50 50)"
                 initial={{ strokeDasharray: "0 264" }}
-                animate={{ strokeDasharray: `${percentage * 2.64} ${264 - percentage * 2.64}` }}
+                animate={{
+                  strokeDasharray: `${percentage * 2.64} ${264 - percentage * 2.64}`,
+                }}
                 transition={{ duration: 1.2, delay: 0.6 }}
               />
             </svg>
@@ -250,7 +310,7 @@ export const Scoreboard = ({
         >
           {gradeInfo.message}
         </motion.p>
-        
+
         {/* Coins earned display */}
         <motion.div
           className="flex justify-center mb-4"
@@ -269,7 +329,9 @@ export const Scoreboard = ({
             >
               💰
             </motion.span>
-            <span className="font-pixel text-sm text-warning">+{coinsEarned} COINS!</span>
+            <span className="font-pixel text-sm text-warning">
+              +{coinsEarned} COINS!
+            </span>
             <motion.span
               animate={{ rotate: [0, -10, 10, 0] }}
               transition={{ duration: 1, repeat: Infinity, delay: 0.5 }}
@@ -291,9 +353,11 @@ export const Scoreboard = ({
               <StarIcon size={20} />
             </div>
             <div className="font-pixel text-sm text-warning">{score}</div>
-            <div className="text-[10px] text-muted-foreground font-body">SCORE</div>
+            <div className="text-[10px] text-muted-foreground font-body">
+              SCORE
+            </div>
           </motion.div>
-          
+
           <motion.div
             className="bg-pastel-mint/80 rounded-xl p-3 text-center border-2 border-success/30"
             initial={{ opacity: 0, y: 20 }}
@@ -303,10 +367,14 @@ export const Scoreboard = ({
             <div className="flex justify-center mb-1">
               <Trophy size={20} className="text-success" />
             </div>
-            <div className="font-pixel text-sm text-success">{correctAnswers}/{totalQuestions}</div>
-            <div className="text-[10px] text-muted-foreground font-body">CORRECT</div>
+            <div className="font-pixel text-sm text-success">
+              {correctAnswers}/{totalQuestions}
+            </div>
+            <div className="text-[10px] text-muted-foreground font-body">
+              CORRECT
+            </div>
           </motion.div>
-          
+
           <motion.div
             className="bg-pastel-lavender/80 rounded-xl p-3 text-center border-2 border-accent/30"
             initial={{ opacity: 0, y: 20 }}
@@ -317,7 +385,9 @@ export const Scoreboard = ({
               <Star size={20} className="text-accent" />
             </div>
             <div className="font-pixel text-sm text-accent">{percentage}%</div>
-            <div className="text-[10px] text-muted-foreground font-body">ACCURACY</div>
+            <div className="text-[10px] text-muted-foreground font-body">
+              ACCURACY
+            </div>
           </motion.div>
 
           <motion.div
@@ -329,8 +399,12 @@ export const Scoreboard = ({
             <div className="flex justify-center mb-1">
               <Clock size={20} className="text-primary" />
             </div>
-            <div className="font-pixel text-[10px] text-primary">{timeString}</div>
-            <div className="text-[10px] text-muted-foreground font-body">TIME</div>
+            <div className="font-pixel text-[10px] text-primary">
+              {timeString}
+            </div>
+            <div className="text-[10px] text-muted-foreground font-body">
+              TIME
+            </div>
           </motion.div>
         </div>
 
@@ -350,7 +424,7 @@ export const Scoreboard = ({
           >
             PLAY AGAIN
           </CuteButton>
-          
+
           <div className="flex gap-3">
             <CuteButton
               variant="secondary"
@@ -361,16 +435,18 @@ export const Scoreboard = ({
             >
               HOME
             </CuteButton>
-            
+
             <CuteButton
               variant="accent"
               size="md"
               onClick={() => {
-                navigator.share?.({
-                  title: "Watch & Memorize - WordIT",
-                  text: `I scored ${score} points with ${percentage}% accuracy in Watch & Memorize! Can you beat me?`,
-                  url: window.location.href,
-                }).catch(() => {});
+                navigator
+                  .share?.({
+                    title: "Watch & Memorize - WordIT",
+                    text: `I scored ${score} points with ${percentage}% accuracy in Watch & Memorize! Can you beat me?`,
+                    url: window.location.href,
+                  })
+                  .catch(() => {});
               }}
               icon={<Share2 size={16} />}
               className="flex-1"

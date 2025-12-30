@@ -22,7 +22,7 @@ export const MusicControls = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <motion.div 
+    <motion.div
       className="relative"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -66,7 +66,9 @@ export const MusicControls = ({
           >
             {/* Play/Stop toggle */}
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-muted-foreground font-body">Background Music</span>
+              <span className="text-xs text-muted-foreground font-body">
+                Background Music
+              </span>
               <motion.button
                 className={`w-12 h-6 rounded-full relative transition-colors ${
                   isPlaying ? "bg-primary" : "bg-muted"
@@ -84,10 +86,14 @@ export const MusicControls = ({
 
             {/* Mute button */}
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-muted-foreground font-body">Mute</span>
+              <span className="text-xs text-muted-foreground font-body">
+                Mute
+              </span>
               <motion.button
                 className={`p-2 rounded-lg transition-colors ${
-                  isMuted ? "bg-destructive/20 text-destructive" : "bg-muted text-foreground"
+                  isMuted
+                    ? "bg-destructive/20 text-destructive"
+                    : "bg-muted text-foreground"
                 }`}
                 onClick={onToggleMute}
                 whileHover={{ scale: 1.1 }}
@@ -100,7 +106,9 @@ export const MusicControls = ({
             {/* Volume slider */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground font-body">Volume</span>
+                <span className="text-xs text-muted-foreground font-body">
+                  Volume
+                </span>
                 <span className="text-xs text-foreground font-pixel">
                   {Math.round(volume * 100)}%
                 </span>

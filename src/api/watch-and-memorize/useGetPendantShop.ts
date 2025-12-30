@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import api from '@/api/axios';
+import { useState, useEffect } from "react";
+import api from "@/api/axios";
 
 export interface Pendant {
   id: string;
@@ -19,7 +19,7 @@ export const useGetPendantShop = () => {
       try {
         setIsLoading(true);
         const response = await api.get<{ data: Pendant[] }>(
-          '/game/game-type/watch-and-memorize/pendant/shop'
+          "/game/game-type/watch-and-memorize/pendant/shop",
         );
         setData(response.data.data);
         setError(null);

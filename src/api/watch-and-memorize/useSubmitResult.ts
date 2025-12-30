@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import api from '../axios';
+import { useState } from "react";
+import api from "../axios";
 
 interface SubmitResultPayload {
   score: number;
@@ -24,14 +24,17 @@ export const useSubmitResult = (gameId: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const submitResult = async (payload: SubmitResultPayload, onSuccess?: () => void) => {
+  const submitResult = async (
+    payload: SubmitResultPayload,
+    onSuccess?: () => void,
+  ) => {
     try {
       setIsLoading(true);
       setError(null);
 
       const { data } = await api.post<{ data: SubmitResultResponse }>(
         `api/game/game-type/watch-and-memorize/${gameId}/submit`,
-        payload
+        payload,
       );
 
       // Call refetch functions if provided

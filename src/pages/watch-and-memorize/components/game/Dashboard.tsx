@@ -13,9 +13,7 @@ import { MusicControls } from "./MusicControls";
 import { useSoundEffects } from "../../hooks/useSoundEffects";
 import { useBackgroundMusic } from "../../hooks/useBackgroundMusic";
 import { gameApi } from "@/api/watch-and-memorize/gameApi";
-import type {
-  GameSession,
-} from "@/api/watch-and-memorize/gameApi";
+import type { GameSession } from "@/api/watch-and-memorize/gameApi";
 import { useGetLeaderboard } from "@/api/watch-and-memorize/useGetLeaderboard";
 import {
   Play,
@@ -72,7 +70,7 @@ interface DashboardProps {
     correctAnswers: number,
     totalQuestions: number,
     timeSpent: number,
-    coinsEarned: number
+    coinsEarned: number,
   ) => void;
 }
 
@@ -172,7 +170,11 @@ const TrophyIcon = ({ size = 32 }: { size?: number }) => (
   </svg>
 );
 
-export const Dashboard = ({ onExit, gameConfig, onGameComplete }: DashboardProps) => {
+export const Dashboard = ({
+  onExit,
+  gameConfig,
+  onGameComplete,
+}: DashboardProps) => {
   const [view, setView] = useState<View>("dashboard");
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem("watchAndMemorize_gameState");
@@ -210,7 +212,7 @@ export const Dashboard = ({ onExit, gameConfig, onGameComplete }: DashboardProps
     toggleMute,
   } = useBackgroundMusic();
 
-  const { data: leaderboardData } = useGetLeaderboard(gameConfig?.id || '', 10);
+  const { data: leaderboardData } = useGetLeaderboard(gameConfig?.id || "", 10);
 
   const DIFFICULTY_CONFIGS = gameConfig?.difficulty_configs || {
     easy: {
@@ -342,10 +344,9 @@ export const Dashboard = ({ onExit, gameConfig, onGameComplete }: DashboardProps
           difficulty: selectedDifficulty,
           coinsEarned,
         };
-        
+
         await gameApi.submitGameResult(gameConfig.id, session);
         console.log("✅ Game result submitted successfully");
-        
       } catch (error) {
         console.error("❌ Failed to submit result:", error);
       }
@@ -359,7 +360,7 @@ export const Dashboard = ({ onExit, gameConfig, onGameComplete }: DashboardProps
         date: "Just now",
         time: timeSpent,
       };
-      
+
       setLeaderboard((prev) => {
         const updated = [...prev, newEntry]
           .sort((a, b) => b.score - a.score)
@@ -369,7 +370,7 @@ export const Dashboard = ({ onExit, gameConfig, onGameComplete }: DashboardProps
     }
 
     setView("scoreboard");
-  }; 
+  };
   const handleStartGame = () => {
     if (!gameState.playerName) {
       setShowNameInput(true);
@@ -422,17 +423,22 @@ export const Dashboard = ({ onExit, gameConfig, onGameComplete }: DashboardProps
   }, [view, playSound]);
 
   useEffect(() => {
-    if (leaderboardData?.leaderboard && leaderboardData.leaderboard.length > 0) {
-      const formattedLeaderboard = leaderboardData.leaderboard.map((entry, index) => ({
-        name: entry.username, // Dari backend field: username
-        score: entry.score,
-        avatar: index % 8,
-        date: entry.created_at 
-          ? new Date(entry.created_at).toLocaleDateString()
-          : "Recently",
-        time: entry.time_taken, // Dari backend field: time_taken
-      }));
-    
+    if (
+      leaderboardData?.leaderboard &&
+      leaderboardData.leaderboard.length > 0
+    ) {
+      const formattedLeaderboard = leaderboardData.leaderboard.map(
+        (entry, index) => ({
+          name: entry.username, // Dari backend field: username
+          score: entry.score,
+          avatar: index % 8,
+          date: entry.created_at
+            ? new Date(entry.created_at).toLocaleDateString()
+            : "Recently",
+          time: entry.time_taken, // Dari backend field: time_taken
+        }),
+      );
+
       setLeaderboard(formattedLeaderboard);
       console.log("✅ Leaderboard loaded from backend");
     }
@@ -1072,7 +1078,7 @@ export const Dashboard = ({ onExit, gameConfig, onGameComplete }: DashboardProps
         >
           {(() => {
             const Animal = ANIMALS[0]?.component;
-            if (!Animal) return null; 
+            if (!Animal) return null;
             return <Animal size={45} isHappy={true} />;
           })()}
         </motion.div>
@@ -1083,7 +1089,7 @@ export const Dashboard = ({ onExit, gameConfig, onGameComplete }: DashboardProps
         >
           {(() => {
             const AnimalComponent = ANIMALS[2]?.component;
-            if (!AnimalComponent) return null; 
+            if (!AnimalComponent) return null;
             return <AnimalComponent size={45} isHappy={true} />;
           })()}
         </motion.div>
@@ -1415,4 +1421,4 @@ export const Dashboard = ({ onExit, gameConfig, onGameComplete }: DashboardProps
       </AnimatePresence>
     </div>
   );
-}
+};

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import api from '@/api/axios';
+import { useState, useEffect } from "react";
+import api from "@/api/axios";
 
 interface LeaderboardEntry {
   id: string;
@@ -32,9 +32,9 @@ export const useGetLeaderboard = (gameId: string, limit: number = 10) => {
       try {
         setIsLoading(true);
         const response = await api.get(
-          `/api/game/game-type/watch-and-memorize/${gameId}/leaderboard?limit=${limit}`
+          `/api/game/game-type/watch-and-memorize/${gameId}/leaderboard?limit=${limit}`,
         );
-       
+
         setData(response.data.data);
         setError(null);
       } catch (err) {

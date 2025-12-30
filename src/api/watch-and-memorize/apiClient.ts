@@ -28,10 +28,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 // ✅ Helper untuk get auth token
 function getAuthHeaders(): HeadersInit {
-  const token = localStorage.getItem('token'); // Sesuaikan dengan storage kamu
+  const token = localStorage.getItem("token"); // Sesuaikan dengan storage kamu
   return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` }),
+    "Content-Type": "application/json",
+    ...(token && { Authorization: `Bearer ${token}` }),
   };
 }
 

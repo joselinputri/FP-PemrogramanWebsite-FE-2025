@@ -13,20 +13,26 @@ const PlayWatchAndMemorize = () => {
   const navigate = useNavigate();
   const { gameId } = useParams<{ gameId: string }>();
 
-  const [stage, setStage] = useState<"loading" | "intro" | "dashboard">("dashboard");
+  const [stage, setStage] = useState<"loading" | "intro" | "dashboard">(
+    "dashboard",
+  );
 
   // ⭐ Fetch game config from backend
-  const { data: gameConfig, isLoading, error } = useGetPlayWatchAndMemorize(gameId || '');
+  const {
+    data: gameConfig,
+    isLoading,
+    error,
+  } = useGetPlayWatchAndMemorize(gameId || "");
 
   // ⭐ Submit result hook
-  const { submitResult } = useSubmitResult(gameId || '');
+  const { submitResult } = useSubmitResult(gameId || "");
 
   // ⭐ Trigger intro animation setelah data loaded
   useEffect(() => {
     if (!isLoading && gameConfig && stage === "loading") {
       // Data loaded, mulai intro animation
       setStage("intro");
-      
+
       // Auto transition ke dashboard setelah 2.5 detik
       const timer = setTimeout(() => {
         setStage("dashboard");
@@ -49,12 +55,12 @@ const PlayWatchAndMemorize = () => {
       timeSpent: number,
       coinsEarned: number,
     ) => {
-      console.log("🎮 Game Complete:", { 
-        score, 
-        correctAnswers, 
-        totalQuestions, 
-        timeSpent, 
-        coinsEarned 
+      console.log("🎮 Game Complete:", {
+        score,
+        correctAnswers,
+        totalQuestions,
+        timeSpent,
+        coinsEarned,
       });
 
       try {
@@ -95,10 +101,10 @@ const PlayWatchAndMemorize = () => {
                   key={i}
                   className="w-4 h-4 rounded-full bg-primary"
                   animate={{ y: [-12, 12, -12] }}
-                  transition={{ 
-                    duration: 0.6, 
-                    repeat: Infinity, 
-                    delay: i * 0.15 
+                  transition={{
+                    duration: 0.6,
+                    repeat: Infinity,
+                    delay: i * 0.15,
                   }}
                 />
               ))}
@@ -137,14 +143,14 @@ const PlayWatchAndMemorize = () => {
             >
               <Penguin size={80} isSad />
             </motion.div>
-            
+
             <h1 className="text-2xl font-pixel text-destructive mb-3 mt-4">
               Oops! Error
             </h1>
             <p className="text-muted-foreground text-sm mb-6 font-body">
               {error.message || "Failed to load game. Please try again."}
             </p>
-            
+
             <button
               onClick={handleExit}
               className="px-8 py-3 bg-primary text-primary-foreground rounded-2xl hover:bg-primary/90 transition-all duration-300 shadow-lg font-pixel"
@@ -162,7 +168,7 @@ const PlayWatchAndMemorize = () => {
     return (
       <div className="fixed inset-0 overflow-hidden">
         <GameBackground />
-        
+
         <motion.div
           className="absolute inset-0 flex flex-col items-center justify-center z-20"
           initial={{ opacity: 0 }}
@@ -172,26 +178,26 @@ const PlayWatchAndMemorize = () => {
           {/* Penguin Terbang */}
           <motion.div
             initial={{ y: 200, rotate: 10, scale: 0.5 }}
-            animate={{ 
-              y: 0, 
-              rotate: 0, 
-              scale: 1 
+            animate={{
+              y: 0,
+              rotate: 0,
+              scale: 1,
             }}
-            transition={{ 
-              duration: 0.8, 
-              type: "spring", 
-              bounce: 0.4 
+            transition={{
+              duration: 0.8,
+              type: "spring",
+              bounce: 0.4,
             }}
           >
             <motion.div
-              animate={{ 
+              animate={{
                 y: [-15, 15, -15],
-                rotate: [-3, 3, -3]
+                rotate: [-3, 3, -3],
               }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
               }}
             >
               <Penguin size={180} isFlying isHappy />
@@ -208,10 +214,10 @@ const PlayWatchAndMemorize = () => {
                 top: `calc(50% + ${Math.sin((i * Math.PI) / 6) * 110}px)`,
               }}
               initial={{ opacity: 0, scale: 0 }}
-              animate={{ 
+              animate={{
                 opacity: [0, 1, 1, 0],
                 scale: [0.5, 1.3, 1.3, 0.5],
-                rotate: [0, 180, 360]
+                rotate: [0, 180, 360],
               }}
               transition={{
                 duration: 2.5,
@@ -219,10 +225,7 @@ const PlayWatchAndMemorize = () => {
                 delay: i * 0.15,
               }}
             >
-              <Sparkles 
-                size={22} 
-                className="text-warning drop-shadow-lg" 
-              />
+              <Sparkles size={22} className="text-warning drop-shadow-lg" />
             </motion.div>
           ))}
 
@@ -243,7 +246,8 @@ const PlayWatchAndMemorize = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            {gameConfig?.description || "A cute memory game with adorable animals!"}
+            {gameConfig?.description ||
+              "A cute memory game with adorable animals!"}
           </motion.p>
 
           {/* Floating hearts/decorations */}
@@ -256,7 +260,7 @@ const PlayWatchAndMemorize = () => {
                 bottom: 0,
               }}
               initial={{ y: 0, opacity: 0 }}
-              animate={{ 
+              animate={{
                 y: -500,
                 opacity: [0, 0.8, 0.8, 0],
               }}
@@ -264,13 +268,22 @@ const PlayWatchAndMemorize = () => {
                 duration: 3,
                 repeat: Infinity,
                 delay: i * 0.4,
-                ease: "easeOut"
+                ease: "easeOut",
               }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24">
-                <path 
-                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" 
-                  fill={["#FFB6C1", "#FFD1DC", "#E1BEE7", "#FFCDD2", "#F8BBD9", "#FCE4EC"][i]}
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  fill={
+                    [
+                      "#FFB6C1",
+                      "#FFD1DC",
+                      "#E1BEE7",
+                      "#FFCDD2",
+                      "#F8BBD9",
+                      "#FCE4EC",
+                    ][i]
+                  }
                   opacity="0.8"
                 />
               </svg>
@@ -284,10 +297,10 @@ const PlayWatchAndMemorize = () => {
   // ========== DASHBOARD (Main Menu) ==========
   if (stage === "dashboard" && gameConfig) {
     return (
-      <Dashboard 
-        onExit={handleExit} 
-        gameConfig={gameConfig} 
-        onGameComplete={handleGameComplete} 
+      <Dashboard
+        onExit={handleExit}
+        gameConfig={gameConfig}
+        onGameComplete={handleGameComplete}
       />
     );
   }

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import api from '@/api/axios';
+import { useState, useEffect } from "react";
+import api from "@/api/axios";
 
 interface CoinsResponse {
   userId: string;
@@ -17,7 +17,7 @@ export const useGetCoins = () => {
       try {
         setIsLoading(true);
         const response = await api.get<{ data: CoinsResponse }>(
-          '/game/game-type/watch-and-memorize/coins'
+          "/game/game-type/watch-and-memorize/coins",
         );
         setData(response.data.data);
         setError(null);

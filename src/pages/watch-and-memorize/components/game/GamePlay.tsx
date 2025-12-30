@@ -334,94 +334,94 @@ export const GamePlay = ({
   // Handle card click during guessing - cards stay face up
   // ✅ FIXED handleCardClick - Replace entire function di GamePlay.tsx
 
-const handleCardClick = (index: number, animalId: AnimalId) => {
-  if (phase !== "guessing" || playerGuesses.length >= config.animalsToWatch)
-    return;
-  if (selectedCards.includes(index)) return; // Already selected this card
+  const handleCardClick = (index: number, animalId: AnimalId) => {
+    if (phase !== "guessing" || playerGuesses.length >= config.animalsToWatch)
+      return;
+    if (selectedCards.includes(index)) return; // Already selected this card
 
-  playSfx("click");
+    playSfx("click");
 
-  const currentGuessIndex = playerGuesses.length;
-  const expectedAnimal = sequenceToRemember[currentGuessIndex];
-  
-  // ✅ FIXED: Validate both animal ID AND that this is the correct card instance
-  // Build a map of which card indices correspond to which sequence positions
-  const correctCardIndex = (() => {
-    const usedIndices = new Set(selectedCards);
-    
-    // Find the card index that matches the expected animal
-    // and hasn't been selected yet
-    for (let i = 0; i < shuffledCards.length; i++) {
-      if (shuffledCards[i] === expectedAnimal && !usedIndices.has(i)) {
-        return i;
+    const currentGuessIndex = playerGuesses.length;
+    const expectedAnimal = sequenceToRemember[currentGuessIndex];
+
+    // ✅ FIXED: Validate both animal ID AND that this is the correct card instance
+    // Build a map of which card indices correspond to which sequence positions
+    const correctCardIndex = (() => {
+      const usedIndices = new Set(selectedCards);
+
+      // Find the card index that matches the expected animal
+      // and hasn't been selected yet
+      for (let i = 0; i < shuffledCards.length; i++) {
+        if (shuffledCards[i] === expectedAnimal && !usedIndices.has(i)) {
+          return i;
+        }
       }
-    }
-    return -1;
-  })();
+      return -1;
+    })();
 
-  const isCorrect = (index === correctCardIndex) && (animalId === expectedAnimal);
+    const isCorrect = index === correctCardIndex && animalId === expectedAnimal;
 
-  if (isCorrect) {
-    playSfx("correct");
-    setCardStates((prev) => ({ ...prev, [index]: "correct" }));
-    setSelectedCards((prev) => [...prev, index]);
-    setPlayerGuesses((prev) => [...prev, animalId]);
+    if (isCorrect) {
+      playSfx("correct");
+      setCardStates((prev) => ({ ...prev, [index]: "correct" }));
+      setSelectedCards((prev) => [...prev, index]);
+      setPlayerGuesses((prev) => [...prev, animalId]);
 
-    // ✅ Check if game is complete
-    if (playerGuesses.length + 1 === config.animalsToWatch) {
-      const pointsEarned = doublePoints ? 200 : 100;
-      setScore((prev) => prev + pointsEarned);
-      setCorrectAnswers((prev) => prev + 1);
-      setRoundCorrect(true);
-      setPhase("result");
-      setDoublePoints(false);
-      playSfx("win");
-    }
-  } else {
-    // Wrong answer - flash card but allow retry
-    playSfx("wrong");
-    setCardStates((prev) => ({ ...prev, [index]: "wrong" }));
-    setShowWrongFlash(true);
-    setWrongAttempts((prev) => prev + 1);
-
-    if (hasShield) {
-      // Shield protects from penalty
-      setHasShield(false);
-      setTimeout(() => {
-        setCardStates((prev) => {
-          const newStates = { ...prev };
-          delete newStates[index];
-          return newStates;
-        });
-        setShowWrongFlash(false);
-      }, 800);
+      // ✅ Check if game is complete
+      if (playerGuesses.length + 1 === config.animalsToWatch) {
+        const pointsEarned = doublePoints ? 200 : 100;
+        setScore((prev) => prev + pointsEarned);
+        setCorrectAnswers((prev) => prev + 1);
+        setRoundCorrect(true);
+        setPhase("result");
+        setDoublePoints(false);
+        playSfx("win");
+      }
     } else {
-      // Add 5.5 seconds extra time to keep trying
-      setGuessTimeLeft((prev) =>
-        Math.min(prev + 5.5, config.guessTimeLimit + 10),
-      );
+      // Wrong answer - flash card but allow retry
+      playSfx("wrong");
+      setCardStates((prev) => ({ ...prev, [index]: "wrong" }));
+      setShowWrongFlash(true);
+      setWrongAttempts((prev) => prev + 1);
 
-      // Clear wrong state after animation
-      setTimeout(() => {
-        setCardStates((prev) => {
-          const newStates = { ...prev };
-          delete newStates[index];
-          return newStates;
-        });
-        setShowWrongFlash(false);
-      }, 800);
-
-      // Only fail after 3 wrong attempts
-      if (wrongAttempts >= 2) {
+      if (hasShield) {
+        // Shield protects from penalty
+        setHasShield(false);
         setTimeout(() => {
-          setRoundCorrect(false);
-          setPhase("result");
-          playSfx("lose");
-        }, 1000);
+          setCardStates((prev) => {
+            const newStates = { ...prev };
+            delete newStates[index];
+            return newStates;
+          });
+          setShowWrongFlash(false);
+        }, 800);
+      } else {
+        // Add 5.5 seconds extra time to keep trying
+        setGuessTimeLeft((prev) =>
+          Math.min(prev + 5.5, config.guessTimeLimit + 10),
+        );
+
+        // Clear wrong state after animation
+        setTimeout(() => {
+          setCardStates((prev) => {
+            const newStates = { ...prev };
+            delete newStates[index];
+            return newStates;
+          });
+          setShowWrongFlash(false);
+        }, 800);
+
+        // Only fail after 3 wrong attempts
+        if (wrongAttempts >= 2) {
+          setTimeout(() => {
+            setRoundCorrect(false);
+            setPhase("result");
+            playSfx("lose");
+          }, 1000);
+        }
       }
     }
-  }
-};
+  };
 
   // Move to next round or complete game
   const handleNextRound = () => {
@@ -438,121 +438,121 @@ const handleCardClick = (index: number, animalId: AnimalId) => {
   // Use pendant with actual effects
   // ✅ FIXED handleUsePendant - Replace entire function di GamePlay.tsx
 
-const handleUsePendant = (type: PendantType) => {
-  if (pendants[type] <= 0) return;
-  if (phase !== "guessing") return; // ✅ Only allow pendant use during guessing
+  const handleUsePendant = (type: PendantType) => {
+    if (pendants[type] <= 0) return;
+    if (phase !== "guessing") return; // ✅ Only allow pendant use during guessing
 
-  playSfx("powerup");
-  onUsePendant(type);
+    playSfx("powerup");
+    onUsePendant(type);
 
-  switch (type) {
-    case "hint": {
-      // ✅ FIXED: Show NEXT correct animal in sequence
-      if (playerGuesses.length >= config.animalsToWatch) return; // Already complete
-      
-      const nextCorrectAnimal = sequenceToRemember[playerGuesses.length];
-      
-      // Find the card index that matches the NEXT correct animal
-      // and hasn't been selected yet
-      const hintCardIdx = shuffledCards.findIndex(
-        (animalId, idx) => 
-          animalId === nextCorrectAnimal && !selectedCards.includes(idx)
-      );
+    switch (type) {
+      case "hint": {
+        // ✅ FIXED: Show NEXT correct animal in sequence
+        if (playerGuesses.length >= config.animalsToWatch) return; // Already complete
 
-      if (hintCardIdx !== -1) {
-        // Highlight with pulsing animation
-        setCardStates((prev) => ({ ...prev, [hintCardIdx]: "correct" }));
-        
-        // Remove highlight after 2 seconds
+        const nextCorrectAnimal = sequenceToRemember[playerGuesses.length];
+
+        // Find the card index that matches the NEXT correct animal
+        // and hasn't been selected yet
+        const hintCardIdx = shuffledCards.findIndex(
+          (animalId, idx) =>
+            animalId === nextCorrectAnimal && !selectedCards.includes(idx),
+        );
+
+        if (hintCardIdx !== -1) {
+          // Highlight with pulsing animation
+          setCardStates((prev) => ({ ...prev, [hintCardIdx]: "correct" }));
+
+          // Remove highlight after 2 seconds
+          setTimeout(() => {
+            setCardStates((prev) => {
+              const newStates = { ...prev };
+              // Only remove if card hasn't been selected
+              if (!selectedCards.includes(hintCardIdx)) {
+                delete newStates[hintCardIdx];
+              }
+              return newStates;
+            });
+          }, 2000);
+        }
+        break;
+      }
+
+      case "freeze": {
+        // ✅ Freeze timer for 5 seconds
+        setIsTimeFrozen(true);
+        setFrozenTimeLeft(5);
+
+        const freezeInterval = setInterval(() => {
+          setFrozenTimeLeft((prev) => {
+            if (prev <= 1) {
+              clearInterval(freezeInterval);
+              setIsTimeFrozen(false);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+        break;
+      }
+
+      case "double": {
+        // ✅ Double points for THIS round only
+        setDoublePoints(true);
+        break;
+      }
+
+      case "shield": {
+        // ✅ Protect from ONE wrong answer
+        setHasShield(true);
+        break;
+      }
+
+      case "reveal": {
+        const correctCardIndices: number[] = [];
+
+        // Build list of correct card indices in order
+        sequenceToRemember.forEach((animalId) => {
+          const cardIdx = shuffledCards.findIndex(
+            (id, idx) =>
+              id === animalId &&
+              !correctCardIndices.includes(idx) &&
+              !selectedCards.includes(idx),
+          );
+          if (cardIdx !== -1) {
+            correctCardIndices.push(cardIdx);
+          }
+        });
+
+        // Show correct cards with staggered animation
+        correctCardIndices.forEach((cardIdx, idx) => {
+          setTimeout(() => {
+            setCardStates((prev) => ({ ...prev, [cardIdx]: "correct" }));
+          }, idx * 200);
+        });
+
+        // Hide revealed cards after 2.5 seconds, but keep selected cards
         setTimeout(() => {
           setCardStates((prev) => {
             const newStates = { ...prev };
-            // Only remove if card hasn't been selected
-            if (!selectedCards.includes(hintCardIdx)) {
-              delete newStates[hintCardIdx];
-            }
+
+            // Only remove states for cards that were revealed (not selected)
+            correctCardIndices.forEach((cardIdx) => {
+              if (!selectedCards.includes(cardIdx)) {
+                delete newStates[cardIdx];
+              }
+            });
+
             return newStates;
           });
-        }, 2000);
+        }, 2500);
+        break;
       }
-      break;
+
+      default:
+        break;
     }
-
-    case "freeze": {
-      // ✅ Freeze timer for 5 seconds
-      setIsTimeFrozen(true);
-      setFrozenTimeLeft(5);
-
-      const freezeInterval = setInterval(() => {
-        setFrozenTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(freezeInterval);
-            setIsTimeFrozen(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      break;
-    }
-
-    case "double": {
-      // ✅ Double points for THIS round only
-      setDoublePoints(true);
-      break;
-    }
-
-    case "shield": {
-      // ✅ Protect from ONE wrong answer
-      setHasShield(true);
-      break;
-    }
-
-    case "reveal": {
-      const correctCardIndices: number[] = [];
-      
-      // Build list of correct card indices in order
-      sequenceToRemember.forEach((animalId) => {
-        const cardIdx = shuffledCards.findIndex(
-          (id, idx) => 
-            id === animalId && 
-            !correctCardIndices.includes(idx) && 
-            !selectedCards.includes(idx)
-        );
-        if (cardIdx !== -1) {
-          correctCardIndices.push(cardIdx);
-        }
-      });
-
-      // Show correct cards with staggered animation
-      correctCardIndices.forEach((cardIdx, idx) => {
-        setTimeout(() => {
-          setCardStates((prev) => ({ ...prev, [cardIdx]: "correct" }));
-        }, idx * 200);
-      });
-
-      // Hide revealed cards after 2.5 seconds, but keep selected cards
-      setTimeout(() => {
-        setCardStates((prev) => {
-          const newStates = { ...prev };
-          
-          // Only remove states for cards that were revealed (not selected)
-          correctCardIndices.forEach((cardIdx) => {
-            if (!selectedCards.includes(cardIdx)) {
-              delete newStates[cardIdx];
-            }
-          });
-          
-          return newStates;
-        });
-      }, 2500);
-      break;
-    }
-
-    default:
-      break;
-  }
-};
+  };
 
   // Handle exit with play count increment
   const handleExit = async () => {
