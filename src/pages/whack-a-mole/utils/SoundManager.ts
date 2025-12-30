@@ -5,7 +5,7 @@ let audioCtx: AudioContext | null = null;
 
 const getContext = () => {
   if (!audioCtx) {
-    // @ts-expect-error (untuk support browser lama)
+    // @ ts-expect-error (untuk support browser lama)
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     audioCtx = new AudioContext();
   }
