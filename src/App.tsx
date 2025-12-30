@@ -62,16 +62,12 @@ import WhackAMoleGame from "./pages/whack-a-mole";
 import CreateWhackAMole from "./pages/whack-a-mole/create";
 import EditWhackAMole from "./pages/whack-a-mole/edit";
 
-import SpeedSorting from "./pages/speed-sorting/SpeedSorting";
-import CreateSpeedSorting from "./pages/speed-sorting/CreateSpeedSorting";
-import EditSpeedSorting from "./pages/speed-sorting/EditSpeedSorting";
-
 import CreateCrossword from "./pages/crosswords/create";
 import PlayCrossword from "./pages/crosswords/index";
 import EditCrossword from "./pages/crosswords/edit";
 
 import CreateWatchMemorize from "./pages/watch-and-memorize/CreateGame";
-import EditWatchMemorize from "./pages/watch-and-memorize/EditGame"; 
+import EditWatchMemorize from "./pages/watch-and-memorize/EditGame";
 import PlayWatchAndMemorize from "./pages/watch-and-memorize/PlayWatchAndMemorize";
 
 function App() {
@@ -91,8 +87,14 @@ function App() {
         <Route path="/flip-tiles/play/:id" element={<FlipTiles />} />
         <Route path="/speed-sorting/play/:id" element={<SpeedSorting />} />
         <Route path="/anagram/play/:id" element={<PlayAnagram />} />
-        <Route path="/pair-or-no-pair/play/:gameId" element={<PairOrNoPairGame />} />
-        <Route path="/watch-and-memorize/play/:gameId" element={<PlayWatchAndMemorize />} />
+        <Route
+          path="/pair-or-no-pair/play/:gameId"
+          element={<PairOrNoPairGame />}
+        />
+        <Route
+          path="/watch-and-memorize/play/:gameId"
+          element={<PlayWatchAndMemorize />}
+        />
         <Route path="/hangman/play/:id" element={<HangmanGame />} />
         <Route
           path="/pair-or-no-pair/play/:gameId"
@@ -113,8 +115,14 @@ function App() {
           <Route path="/create-projects" element={<CreateProject />} />
 
           <Route path="/create-quiz" element={<CreateQuiz />} />
-          <Route path="/create-speed-sorting" element={<CreateSpeedSorting />} />
-          <Route path="/create-pair-or-no-pair" element={<CreatePairOrNoPair />} />
+          <Route
+            path="/create-speed-sorting"
+            element={<CreateSpeedSorting />}
+          />
+          <Route
+            path="/create-pair-or-no-pair"
+            element={<CreatePairOrNoPair />}
+          />
           <Route path="/quiz/edit/:id" element={<EditQuiz />} />
 
           <Route path="/create-airplane" element={<CreateAirplane />} />
@@ -156,12 +164,21 @@ function App() {
           <Route path="/maze-chase/edit/:id" element={<EditMazeChase />} />
 
           <Route path="/create-anagram" element={<CreateAnagram />} />
-          <Route path="/create-watch-and-memorize" element={<CreateWatchMemorize />} />
-          
+          <Route
+            path="/create-watch-and-memorize"
+            element={<CreateWatchMemorize />}
+          />
+
           <Route path="/quiz/edit/:id" element={<EditQuiz />} />
-          <Route path="/speed-sorting/edit/:id" element={<EditSpeedSorting />} />
+          <Route
+            path="/speed-sorting/edit/:id"
+            element={<EditSpeedSorting />}
+          />
           <Route path="/anagram/edit/:id" element={<EditAnagram />} />
-          <Route path="/watch-and-memorize/edit/:id" element={<EditWatchMemorize />} />
+          <Route
+            path="/watch-and-memorize/edit/:id"
+            element={<EditWatchMemorize />}
+          />
 
           <Route path="/create-unjumble" element={<CreateUnjumble />} />
           <Route path="/unjumble/edit/:id" element={<EditUnjumble />} />

@@ -44,7 +44,16 @@ export const MemoryCard = ({
     <motion.div
       className={`${sizeClasses[size]} cursor-pointer select-none relative group`}
       onClick={disabled ? undefined : onClick}
-      whileHover={disabled ? {} : { scale: 1.08, y: -6, rotateZ: [-1, 1, 0] }}
+      whileHover={
+        disabled
+          ? {}
+          : {
+              scale: 1.08,
+              y: -6,
+              rotateZ: [-1, 1, 0],
+              transition: { type: "tween", duration: 0.3 },
+            }
+      }
       whileTap={disabled ? {} : { scale: 0.94 }}
       transition={{ type: "spring", stiffness: 400, damping: 15 }}
       animate={
@@ -53,7 +62,7 @@ export const MemoryCard = ({
           : isCorrect
             ? {
                 scale: [1, 1.12, 1],
-                transition: { duration: 0.35, type: "spring" },
+                transition: { duration: 0.35, type: "tween" },
               }
             : {}
       }

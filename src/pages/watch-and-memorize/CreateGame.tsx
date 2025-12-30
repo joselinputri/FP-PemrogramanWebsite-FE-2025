@@ -205,22 +205,21 @@ function CreateWatchAndMemorize() {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       console.log("Response:", response.data);
       toast.success("Game created successfully!");
       navigate("/my-projects");
-    } catch (err: any) {
-      console.error("Failed to create game:", err);
-      
-      // Better error handling
-      const errorMessage = err.response?.data?.message || "Failed to create game";
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      const errorMessage =
+        error.response?.data?.message || "Failed to create game";
       toast.error(errorMessage);
-      
+
       // Log detailed error for debugging
-      if (err.response?.data) {
-        console.error("Error details:", err.response.data);
+      if (error.response?.data) {
+        console.error("Error details:", error.response.data);
       }
     }
   };

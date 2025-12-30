@@ -75,28 +75,28 @@ export const WalkingAnimal = ({
       >
         <svg width="70" height="30" viewBox="0 0 70 30">
           <ellipse
-            cx="15"
-            cy="22"
-            rx="10"
-            ry="6"
+            cx={15}
+            cy={22}
+            rx={10}
+            ry={6}
             fill="#E8DCC8"
-            opacity="0.6"
+            opacity={0.6}
           />
           <ellipse
-            cx="35"
-            cy="18"
-            rx="14"
-            ry="8"
+            cx={35}
+            cy={18}
+            rx={14}
+            ry={8}
             fill="#E8DCC8"
-            opacity="0.5"
+            opacity={0.5}
           />
           <ellipse
-            cx="55"
-            cy="22"
-            rx="10"
-            ry="6"
+            cx={55}
+            cy={22}
+            rx={10}
+            ry={6}
             fill="#E8DCC8"
-            opacity="0.6"
+            opacity={0.6}
           />
         </svg>
       </motion.div>

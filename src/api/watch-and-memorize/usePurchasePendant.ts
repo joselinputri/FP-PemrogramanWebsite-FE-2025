@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import api from '@/api/axios';
-import { toast } from '../../pages/watch-and-memorize/hooks/use-toast';
+import { useState } from "react";
+import api from "@/api/axios";
+import { toast } from "../../pages/watch-and-memorize/hooks/use-toast";
+import { AxiosError } from "axios";
 
 interface PurchaseResponse {
   success: boolean;
@@ -19,14 +20,14 @@ export const usePurchasePendant = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const { data } = await api.post<{ data: PurchaseResponse }>(
-        '/game/game-type/watch-and-memorize/pendant/purchase',
-        { pendantId }
+        "/game/game-type/watch-and-memorize/pendant/purchase",
+        { pendantId },
       );
 
       toast({
-        title: 'Purchase Successful! 🎉',
+        title: "Purchase Successful! 🎉",
         description: data.data.message,
       });
 
@@ -34,17 +35,19 @@ export const usePurchasePendant = () => {
       if (onSuccess) onSuccess();
 
       return data.data;
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Insufficient coins or error occurred';
-      
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message?: string }>;
+      const errorMessage =
+        error.response?.data?.message || "Insufficient coins or error occurred";
+
       toast({
-        title: 'Purchase Failed',
+        title: "Purchase Failed",
         description: errorMessage,
-        variant: 'destructive',
+        variant: "destructive",
       });
-      
-      setError(err);
-      throw err;
+
+      setError(error as Error);
+      throw error;
     } finally {
       setIsLoading(false);
     }

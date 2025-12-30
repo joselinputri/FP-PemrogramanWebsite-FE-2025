@@ -1,4 +1,19 @@
-import type { AnimalProps } from "./AnimalCollection";
+export interface AnimalProps {
+  size?: number;
+  isWalking?: boolean;
+  isSad?: boolean;
+  isHappy?: boolean;
+  className?: string;
+}
+
+export function safePath(d: string | undefined) {
+  if (!d || typeof d !== "string") {
+    console.warn("⚠️ Invalid SVG path data:", d);
+    return "M0 0";
+  }
+  return d;
+}
+
 import {
   CardPenguin,
   Cow,
@@ -9,7 +24,7 @@ import {
   Fox,
   Dog,
 } from "./AnimalCollection";
-export type { AnimalProps };
+
 export type AnimalId =
   | "penguin"
   | "cow"

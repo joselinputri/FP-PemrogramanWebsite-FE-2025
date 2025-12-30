@@ -47,6 +47,31 @@ export interface OwnedPendantsResponse {
   pendants: PendantResponse[];
 }
 
+export interface SubmitGameResponse {
+  success: boolean;
+  message: string;
+  data: {
+    score: number;
+    coinsEarned: number;
+    totalCoins: number;
+  };
+}
+
+export interface LeaderboardResponse {
+  success: boolean;
+  data: LeaderboardEntry[];
+}
+
+export interface PurchasePendantResponse {
+  success: boolean;
+  message: string;
+  data: {
+    pendantId: string;
+    coinsSpent: number;
+    remainingCoins: number;
+  };
+}
+
 // ========== GAME API ==========
 export const gameApi = {
   // ✅ COINS - Get user's coins (AUTH REQUIRED)
@@ -58,7 +83,7 @@ export const gameApi = {
   async submitGameResult(
     gameId: string,
     session: GameSession,
-  ): Promise<any> {
+  ): Promise<SubmitGameResponse> {
     return apiClient.post(
       `/api/game/game-type/watch-and-memorize/${gameId}/submit`,
       {
@@ -72,9 +97,12 @@ export const gameApi = {
   },
 
   // ✅ LEADERBOARD - Get game leaderboard (PUBLIC)
-  async getLeaderboard(gameId: string, limit: number = 10): Promise<any> {
+  async getLeaderboard(
+    gameId: string,
+    limit: number = 10,
+  ): Promise<LeaderboardResponse> {
     return apiClient.get(
-      `/api/game/game-type/watch-and-memorize/${gameId}/leaderboard?limit=${limit}`
+      `/api/game/game-type/watch-and-memorize/${gameId}/leaderboard?limit=${limit}`,
     );
   },
 
@@ -89,11 +117,10 @@ export const gameApi = {
   },
 
   // ✅ PURCHASE PENDANT - Buy pendant with coins (AUTH REQUIRED)
-  async purchasePendant(pendantId: string): Promise<any> {
+  async purchasePendant(pendantId: string): Promise<PurchasePendantResponse> {
     return apiClient.post(
       "/game/game-type/watch-and-memorize/pendant/purchase",
       { pendantId },
     );
   },
-
 };

@@ -223,7 +223,7 @@ function EditWatchAndMemorize() {
     if (file) setBackgroundMusicPreview(URL.createObjectURL(file));
   };
 
-   const handleSubmit = async (publish = false) => {
+  const handleSubmit = async (publish = false) => {
     if (!thumbnail && !thumbnailPreview) {
       return toast.error("Thumbnail is required");
     }
@@ -233,7 +233,7 @@ function EditWatchAndMemorize() {
     }
 
     const formData = new FormData();
-    
+
     formData.append("name", title);
     formData.append("description", description);
 
@@ -247,7 +247,7 @@ function EditWatchAndMemorize() {
 
     formData.append(
       "is_publish",
-      String(publish || settings.isPublishImmediately)
+      String(publish || settings.isPublishImmediately),
     );
 
     const gameJson = {
@@ -255,37 +255,40 @@ function EditWatchAndMemorize() {
       available_animals: selectedAnimals,
       shop_config: shopConfig,
     };
-    
+
     formData.append("game_json", JSON.stringify(gameJson));
 
     try {
       setLoading(true);
-      
+
       console.log("📤 Sending update request:");
       console.log("- Title:", title);
       console.log("- Description:", description);
       console.log("- Game JSON:", gameJson);
       console.log("- Is Published:", publish || settings.isPublishImmediately);
-      
+
       const response = await api.patch(
         `/api/game/game-type/watch-and-memorize/${id}`,
         formData,
         {
-          headers: { 
-            "Content-Type": "multipart/form-data" 
+          headers: {
+            "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
-      
+
       console.log("✅ Update response:", response.data);
-      
+
       toast.success("Game updated successfully!");
       navigate("/my-projects");
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       console.error("❌ Update failed:", err);
-      console.error("Error response:", err.response?.data);
-      
-      const errorMessage = err.response?.data?.message || "Failed to update game. Please try again.";
+      console.error("Error response:", error.response?.data);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to update game. Please try again.";
       toast.error(errorMessage);
     } finally {
       setLoading(false);

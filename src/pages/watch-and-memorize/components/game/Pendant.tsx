@@ -34,7 +34,7 @@ const pendantData: Record<
           points="20,2 25,15 39,15 28,24 32,38 20,30 8,38 12,24 1,15 15,15"
           fill="#FFD700"
           stroke="#E6B800"
-          strokeWidth="1.5"
+          strokeWidth={1.5}
         />
         <polygon
           points="20,8 23,16 32,16 25,21 27,30 20,25 13,30 15,21 8,16 17,16"
@@ -54,16 +54,16 @@ const pendantData: Record<
         <path
           d="M20 2 L20 38 M5 11 L35 29 M35 11 L5 29"
           stroke="#87CEEB"
-          strokeWidth="3"
+          strokeWidth={3}
           strokeLinecap="round"
         />
-        <circle cx="20" cy="20" r="6" fill="#B0E2FF" />
-        <circle cx="20" cy="6" r="3" fill="#B0E2FF" />
-        <circle cx="20" cy="34" r="3" fill="#B0E2FF" />
-        <circle cx="8" cy="13" r="3" fill="#B0E2FF" />
-        <circle cx="32" cy="27" r="3" fill="#B0E2FF" />
-        <circle cx="32" cy="13" r="3" fill="#B0E2FF" />
-        <circle cx="8" cy="27" r="3" fill="#B0E2FF" />
+        <circle cx={20} cy={20} r={6} fill="#B0E2FF" />
+        <circle cx={20} cy={6} r={3} fill="#B0E2FF" />
+        <circle cx={20} cy={34} r={3} fill="#B0E2FF" />
+        <circle cx={8} cy={13} r={3} fill="#B0E2FF" />
+        <circle cx={32} cy={27} r={3} fill="#B0E2FF" />
+        <circle cx={32} cy={13} r={3} fill="#B0E2FF" />
+        <circle cx={8} cy={27} r={3} fill="#B0E2FF" />
       </svg>
     ),
   },
@@ -74,15 +74,15 @@ const pendantData: Record<
     description: "Doubles points this round",
     icon: (
       <svg viewBox="0 0 40 40" className="w-full h-full">
-        <ellipse cx="14" cy="14" rx="8" ry="9" fill="#4CAF50" />
-        <ellipse cx="26" cy="14" rx="8" ry="9" fill="#4CAF50" />
-        <ellipse cx="14" cy="26" rx="8" ry="9" fill="#4CAF50" />
-        <ellipse cx="26" cy="26" rx="8" ry="9" fill="#4CAF50" />
-        <ellipse cx="14" cy="14" rx="5" ry="6" fill="#81C784" />
-        <ellipse cx="26" cy="14" rx="5" ry="6" fill="#81C784" />
-        <ellipse cx="14" cy="26" rx="5" ry="6" fill="#81C784" />
-        <ellipse cx="26" cy="26" rx="5" ry="6" fill="#81C784" />
-        <rect x="18" y="30" width="4" height="10" fill="#8D6E63" rx="1" />
+        <ellipse cx={14} cy={14} rx={8} ry={9} fill="#4CAF50" />
+        <ellipse cx={26} cy={14} rx={8} ry={9} fill="#4CAF50" />
+        <ellipse cx={14} cy={26} rx={8} ry={9} fill="#4CAF50" />
+        <ellipse cx={26} cy={26} rx={8} ry={9} fill="#4CAF50" />
+        <ellipse cx={14} cy={14} rx={5} ry={6} fill="#81C784" />
+        <ellipse cx={26} cy={14} rx={5} ry={6} fill="#81C784" />
+        <ellipse cx={14} cy={26} rx={5} ry={6} fill="#81C784" />
+        <ellipse cx={26} cy={26} rx={5} ry={6} fill="#81C784" />
+        <rect x={18} y={30} width={4} height={10} fill="#8D6E63" rx={1} />
       </svg>
     ),
   },
@@ -97,7 +97,7 @@ const pendantData: Record<
           d="M20 36 C8 28 4 20 4 12 C4 6 8 4 14 4 C17 4 19 6 20 8 C21 6 23 4 26 4 C32 4 36 6 36 12 C36 20 32 28 20 36"
           fill="#FF6B9D"
           stroke="#E91E63"
-          strokeWidth="1.5"
+          strokeWidth={1.5}
         />
         <path
           d="M20 30 C12 24 9 18 9 12 C9 8 12 7 15 7 C17 7 19 9 20 11"
@@ -115,28 +115,28 @@ const pendantData: Record<
     icon: (
       <svg viewBox="0 0 40 40" className="w-full h-full">
         <ellipse
-          cx="20"
-          cy="20"
-          rx="16"
-          ry="10"
+          cx={20}
+          cy={20}
+          rx={16}
+          ry={10}
           fill="#E1BEE7"
           stroke="#B24BF3"
-          strokeWidth="2"
+          strokeWidth={2}
         />
-        <circle cx="20" cy="20" r="7" fill="#B24BF3" />
-        <circle cx="20" cy="20" r="4" fill="#2D2D2D" />
-        <circle cx="22" cy="18" r="2" fill="#FFF" />
+        <circle cx={20} cy={20} r={7} fill="#B24BF3" />
+        <circle cx={20} cy={20} r={4} fill="#2D2D2D" />
+        <circle cx={22} cy={18} r={2} fill="#FFF" />
         <path
           d="M4 20 Q20 8 36 20"
           fill="none"
           stroke="#B24BF3"
-          strokeWidth="2"
+          strokeWidth={2}
         />
         <path
           d="M4 20 Q20 32 36 20"
           fill="none"
           stroke="#B24BF3"
-          strokeWidth="2"
+          strokeWidth={2}
         />
       </svg>
     ),

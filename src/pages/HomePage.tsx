@@ -74,7 +74,6 @@ export default function HomePage() {
   const isAuthenticated = !!(token && user);
   const navigate = useNavigate();
 
-  // FIXED: Initialize dengan array kosong untuk menghindari undefined
   const [games, setGames] = useState<Game[]>([]);
   const [gameTemplates, setGameTemplates] = useState<GameTemplate[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -97,15 +96,18 @@ export default function HomePage() {
     const fetchGameTemplates = async () => {
       try {
         const response = await api.get("/api/game/template");
-        // FIXED: Tambahkan pengecekan data
+
+        // Cek apakah response valid dan ada data
         if (response.data && Array.isArray(response.data.data)) {
           setGameTemplates(response.data.data);
+        } else if (Array.isArray(response.data)) {
+          setGameTemplates(response.data);
+        } else {
+          setGameTemplates([]);
         }
       } catch (err) {
         console.error("Failed to fetch game templates:", err);
-        setGameTemplates(response.data.data);
-      } catch {
-        // Silently fail template fetch
+        setGameTemplates([]);
       }
     };
     fetchGameTemplates();
@@ -132,48 +134,57 @@ export default function HomePage() {
 
         const response = await api.get(url);
 
-        // FIXED: Tambahkan validasi response data
+        // Cek apakah response valid dan ada data
         if (response.data && Array.isArray(response.data.data)) {
           setGames(
             response.data.data.map(
-              (g: Game) =>
+              (g: GameApiResponse) =>
                 ({
-                  ...g,
+                  id: g.id,
+                  name: g.name,
+                  description: g.description,
+                  thumbnail_image: g.thumbnail_image,
+                  game_template_name:
+                    g.game_template_name || g.game_template?.name || "",
+                  game_template_slug:
+                    g.game_template_slug || g.game_template?.slug || "",
                   total_liked: g.total_liked || 0,
                   total_played: g.total_played || 0,
+                  creator_id: g.creator_id,
+                  creator_name: g.creator_name,
+                  is_game_liked: g.is_game_liked || false,
+                  is_liked: g.is_game_liked || false,
+                }) as Game,
+            ),
+          );
+        } else if (Array.isArray(response.data)) {
+          setGames(
+            response.data.map(
+              (g: GameApiResponse) =>
+                ({
+                  id: g.id,
+                  name: g.name,
+                  description: g.description,
+                  thumbnail_image: g.thumbnail_image,
+                  game_template_name:
+                    g.game_template_name || g.game_template?.name || "",
+                  game_template_slug:
+                    g.game_template_slug || g.game_template?.slug || "",
+                  total_liked: g.total_liked || 0,
+                  total_played: g.total_played || 0,
+                  creator_id: g.creator_id,
+                  creator_name: g.creator_name,
+                  is_game_liked: g.is_game_liked || false,
                   is_liked: g.is_game_liked || false,
                 }) as Game,
             ),
           );
         } else {
-          // Jika response tidak sesuai, set games ke array kosong
           console.warn("Unexpected API response format:", response.data);
           setGames([]);
         }
       } catch (err) {
-        setError("Failed to fetch games. Please try again later.");
-        console.error("Fetch error:", err);
-        // FIXED: Set games ke array kosong saat error
-        setGames(
-          response.data.data.map(
-            (g: GameApiResponse) =>
-              ({
-                id: g.id,
-                name: g.name,
-                description: g.description,
-                thumbnail_image: g.thumbnail_image,
-                game_template_name: g.game_template_name || "",
-                game_template_slug: g.game_template_slug || "",
-                total_liked: g.total_liked || 0,
-                total_played: g.total_played || 0,
-                creator_id: g.creator_id,
-                creator_name: g.creator_name,
-                is_game_liked: g.is_game_liked || false,
-                is_liked: g.is_game_liked || false,
-              }) as Game,
-          ),
-        );
-      } catch {
+        console.error("Failed to fetch games:", err);
         setError("Failed to fetch games. Please try again later.");
         setGames([]);
       } finally {
@@ -221,7 +232,8 @@ export default function HomePage() {
         game_id: gameId,
         is_like: newIsLiked,
       });
-    } catch {
+    } catch (err) {
+      console.error("Failed to like game:", err);
       setGames((prev) =>
         prev.map((game) => {
           if (game.id === gameId) {
@@ -248,16 +260,12 @@ export default function HomePage() {
       navigate(`/${game.game_template_slug}/play/${game.id}`);
     };
 
-    // --- LOGIC GAMBAR YANG BENAR ---
-    // Prioritaskan gambar dari database (hasil upload)
     let imageUrl = thumbnailPlaceholder;
 
     if (game.thumbnail_image && game.thumbnail_image !== "default_image.jpg") {
-      // Cek apakah URL absolut atau relatif
       if (game.thumbnail_image.startsWith("http")) {
         imageUrl = game.thumbnail_image;
       } else {
-        // Jika relatif (uploads/...), tambahkan URL Backend
         imageUrl = `${import.meta.env.VITE_API_URL}/${game.thumbnail_image}`;
       }
     }
@@ -273,7 +281,6 @@ export default function HomePage() {
             alt={game.name}
             className="w-full aspect-video object-cover rounded-md"
             onError={(e) => {
-              // Fallback jika gambar rusak
               e.currentTarget.src = thumbnailPlaceholder;
             }}
           />
@@ -530,8 +537,7 @@ export default function HomePage() {
                   All Types
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {/* FIXED: Tambahkan pengecekan array */}
-                {gameTemplates && gameTemplates.length > 0 ? (
+                {gameTemplates.length > 0 ? (
                   gameTemplates.map((template) => (
                     <DropdownMenuItem
                       key={template.id}
@@ -557,9 +563,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* FIXED: Tambahkan pengecekan array sebelum map */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {games && games.length > 0 ? (
+          {games.length > 0 ? (
             games.map((game: Game) => <GameCard key={game.id} game={game} />)
           ) : (
             <div className="col-span-full text-center py-12">
