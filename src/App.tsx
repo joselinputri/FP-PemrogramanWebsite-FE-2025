@@ -58,6 +58,10 @@ import WhackAMoleGame from "./pages/whack-a-mole";
 import CreateWhackAMole from "./pages/whack-a-mole/create";
 import EditWhackAMole from "./pages/whack-a-mole/edit";
 
+import GroupSort from "./pages/group-sort/GroupSort";
+import CreateGroupSort from "./pages/group-sort/CreateGroupSort";
+import EditGroupSort from "./pages/group-sort/EditGroupSort";
+
 import SpeedSorting from "./pages/speed-sorting/SpeedSorting";
 
 import CreateJeopardy from "./pages/jeopardy/CreateJeopardy";
@@ -117,6 +121,7 @@ function App() {
           path="/sliding-puzzle/play/:id"
           element={<PlaySlidingPuzzle />}
         />
+        <Route path="/group-sort/play/:id" element={<GroupSort />} />
         <Route path="/jeopardy/play/:id/setup" element={<JeopardyLobby />} />
         <Route path="/jeopardy/play/:id" element={<JeopardyBoard />} />
         <Route path="/jeopardy/play/:id/end" element={<JeopardyGameEnd />} />
@@ -225,6 +230,8 @@ function App() {
             path="/sliding-puzzle/edit/:id"
             element={<EditSlidingPuzzle />}
           />
+          <Route path="/create-group-sort" element={<CreateGroupSort />} />
+          <Route path="/group-sort/edit/:id" element={<EditGroupSort />} />
           <Route path="/jeopardy/edit/:id" element={<CreateJeopardy />} />
 
           {/* Puzzle Game (Assembly Puzzle) Routes */}
