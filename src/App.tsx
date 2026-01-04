@@ -62,6 +62,19 @@ import WhackAMoleGame from "./pages/whack-a-mole";
 import CreateWhackAMole from "./pages/whack-a-mole/create";
 import EditWhackAMole from "./pages/whack-a-mole/edit";
 
+import GroupSort from "./pages/group-sort/GroupSort";
+import CreateGroupSort from "./pages/group-sort/CreateGroupSort";
+import EditGroupSort from "./pages/group-sort/EditGroupSort";
+
+import SpeedSorting from "./pages/speed-sorting/SpeedSorting";
+
+import CreateJeopardy from "./pages/jeopardy/CreateJeopardy";
+import JeopardyLobby from "./pages/jeopardy/JeopardyLobby";
+import JeopardyBoard from "./pages/jeopardy/JeopardyBoard";
+import JeopardyGameEnd from "./pages/jeopardy/JeopardyGameEnd";
+import CreateSpeedSorting from "./pages/speed-sorting/CreateSpeedSorting";
+import EditSpeedSorting from "./pages/speed-sorting/EditSpeedSorting";
+
 import CreateCrossword from "./pages/crosswords/create";
 import PlayCrossword from "./pages/crosswords/index";
 import EditCrossword from "./pages/crosswords/edit";
@@ -69,6 +82,21 @@ import EditCrossword from "./pages/crosswords/edit";
 import CreateWatchMemorize from "./pages/watch-and-memorize/CreateGame";
 import EditWatchMemorize from "./pages/watch-and-memorize/EditGame";
 import PlayWatchAndMemorize from "./pages/watch-and-memorize/PlayWatchAndMemorize";
+// Import halaman Math Generator dari src2
+import MathGeneratorPage from "./pages/MathGeneratorPage";
+import MathPlay from "./pages/MathPlay";
+import MathPlayPreview from "./pages/MathPlayPreview";
+import EditMathGenerator from "./pages/EditMathGenerator";
+
+// Import halaman Puzzle Game (Assembly Puzzle)
+import CreatePuzzle from "./pages/games/puzzle/create";
+import EditPuzzle from "./pages/games/puzzle/edit";
+import PlayPuzzle from "./pages/games/puzzle/play";
+import PreviewPuzzle from "./pages/games/puzzle/preview";
+import PuzzleHome from "./pages/games/puzzle/home";
+
+// Export types for game components
+export type { MathQuestion, GameSettings } from "./types/game";
 
 function App() {
   return (
@@ -96,6 +124,7 @@ function App() {
           element={<PlayWatchAndMemorize />}
         />
         <Route path="/hangman/play/:id" element={<HangmanGame />} />
+        <Route path="/math-generator/play/:id" element={<MathPlay />} />
         <Route
           path="/pair-or-no-pair/play/:gameId"
           element={<PairOrNoPairGame />}
@@ -107,7 +136,13 @@ function App() {
           path="/sliding-puzzle/play/:id"
           element={<PlaySlidingPuzzle />}
         />
+        <Route path="/group-sort/play/:id" element={<GroupSort />} />
+        <Route path="/jeopardy/play/:id/setup" element={<JeopardyLobby />} />
+        <Route path="/jeopardy/play/:id" element={<JeopardyBoard />} />
+        <Route path="/jeopardy/play/:id/end" element={<JeopardyGameEnd />} />
         <Route path="/airplane/play/:id" element={<AirplaneGeneralGame />} />
+        <Route path="/puzzle" element={<PuzzleHome />} />
+        <Route path="/puzzle/play/:game_id" element={<PlayPuzzle />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<ProfilePage />} />
@@ -125,6 +160,19 @@ function App() {
           />
           <Route path="/quiz/edit/:id" element={<EditQuiz />} />
 
+          <Route
+            path="/create-math-generator"
+            element={<MathGeneratorPage />}
+          />
+          <Route
+            path="/math-generator/edit/:id"
+            element={<EditMathGenerator />}
+          />
+          <Route
+            path="/math-generator/play/preview/:id"
+            element={<MathPlayPreview />}
+          />
+
           <Route path="/create-airplane" element={<CreateAirplane />} />
           <Route path="/airplane/edit/:id" element={<EditAirplane />} />
 
@@ -138,6 +186,22 @@ function App() {
             path="/create-type-the-answer"
             element={<CreateTypeTheAnswer />}
           />
+          <Route
+            path="/create-speed-sorting"
+            element={<CreateSpeedSorting />}
+          />
+          <Route path="/create-anagram" element={<CreateAnagram />} />
+          <Route
+            path="/create-pair-or-no-pair"
+            element={<CreatePairOrNoPair />}
+          />
+          <Route path="/create-whack-a-mole" element={<CreateWhackAMole />} />
+          <Route path="/whack-a-mole/edit/:id" element={<EditWhackAMole />} />
+          <Route path="/create-maze-chase" element={<CreateMazeChase />} />
+          <Route path="/create-anagram" element={<CreateAnagram />} />
+          <Route path="/create-jeopardy" element={<CreateJeopardy />} />
+          <Route path="/quiz/edit/:id" element={<EditQuiz />} />
+          <Route path="/flip-tiles/edit/:id" element={<EditFlipTiles />} />
           <Route
             path="/type-the-answer/edit/:id"
             element={<EditTypeTheAnswer />}
@@ -203,6 +267,14 @@ function App() {
             path="/sliding-puzzle/edit/:id"
             element={<EditSlidingPuzzle />}
           />
+          <Route path="/create-group-sort" element={<CreateGroupSort />} />
+          <Route path="/group-sort/edit/:id" element={<EditGroupSort />} />
+          <Route path="/jeopardy/edit/:id" element={<CreateJeopardy />} />
+
+          {/* Puzzle Game (Assembly Puzzle) Routes */}
+          <Route path="/create-puzzle" element={<CreatePuzzle />} />
+          <Route path="/puzzle/edit/:game_id" element={<EditPuzzle />} />
+          <Route path="/puzzle/preview/:game_id" element={<PreviewPuzzle />} />
         </Route>
       </Routes>
     </>

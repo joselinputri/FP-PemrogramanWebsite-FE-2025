@@ -11,10 +11,12 @@ api.interceptors.request.use(
     const token = useAuthStore.getState().token;
     const url = config.url || "";
 
+    // Only skip token for auth endpoints (register/login)
     if (url.includes("/api/auth/register") || url.includes("/api/auth/login")) {
       return config;
     }
 
+    // Send token for ALL other requests (including /api/game for publish/unpublish)
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
