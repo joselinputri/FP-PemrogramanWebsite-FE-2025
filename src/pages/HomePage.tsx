@@ -557,19 +557,6 @@ export default function HomePage() {
                 ) : (
                   <DropdownMenuItem disabled>
                     No templates available
-                {gameTemplates?.map((template) => (
-                  <DropdownMenuItem
-                    key={template.id}
-                    onClick={() =>
-                      setGameTypeSlug(
-                        gameTypeSlug === template.slug ? null : template.slug,
-                      )
-                    }
-                    className={
-                      gameTypeSlug === template.slug ? "bg-sky-100" : ""
-                    }
-                  >
-                    {template.name}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
