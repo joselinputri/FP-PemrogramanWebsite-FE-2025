@@ -66,14 +66,10 @@ import GroupSort from "./pages/group-sort/GroupSort";
 import CreateGroupSort from "./pages/group-sort/CreateGroupSort";
 import EditGroupSort from "./pages/group-sort/EditGroupSort";
 
-import SpeedSorting from "./pages/speed-sorting/SpeedSorting";
-
 import CreateJeopardy from "./pages/jeopardy/CreateJeopardy";
 import JeopardyLobby from "./pages/jeopardy/JeopardyLobby";
 import JeopardyBoard from "./pages/jeopardy/JeopardyBoard";
 import JeopardyGameEnd from "./pages/jeopardy/JeopardyGameEnd";
-import CreateSpeedSorting from "./pages/speed-sorting/CreateSpeedSorting";
-import EditSpeedSorting from "./pages/speed-sorting/EditSpeedSorting";
 
 import CreateCrossword from "./pages/crosswords/create";
 import PlayCrossword from "./pages/crosswords/index";
